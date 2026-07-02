@@ -1,5 +1,5 @@
 import { Global, Module } from '@nestjs/common';
-import { dbProvider } from './drizzle-provider';
+import { dbProvider } from './database-provider';
 
 @Global() // so that the module is available globally
 @Module({

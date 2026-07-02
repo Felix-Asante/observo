@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { DB_PROVIDER } from '~/database/drizzle-provider';
+import { DB_PROVIDER } from '~/database/database-provider';
 import { REDIS_CLIENT } from 'src/infra/redis.module';
 import { Redis } from 'ioredis';
 import { ApiKey } from './api-key.schema';
