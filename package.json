@@ -24,11 +24,15 @@
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
     "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.4",
     "@nestjs/core": "^11.0.1",
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^11.0.1",
+    "@types/lru-cache": "^7.10.10",
     "dotenv": "^17.4.2",
     "drizzle-orm": "1.0.0-rc.4",
+    "ioredis": "^5.11.1",
+    "lru-cache": "^11.5.1",
     "pg": "^8.22.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"

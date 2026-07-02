@@ -4,6 +4,7 @@ import { drizzle as drizzleNeon } from 'drizzle-orm/neon-http';
 import { neon } from '@neondatabase/serverless';
 
 export const DRRIZLE_DB = 'DRRIZLE_DB';
+export type DrizzleClient = ReturnType<typeof drizzle>;
 
 @Global()
 @Module({
