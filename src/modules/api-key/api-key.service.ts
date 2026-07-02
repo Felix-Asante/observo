@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { DRRIZLE_DB, type DrizzleClient } from 'src/database/database.module';
+import { DB_PROVIDER } from '~/database/drizzle-provider';
 import { REDIS_CLIENT } from 'src/infra/redis.module';
 import { Redis } from 'ioredis';
 import { ApiKey } from './api-key.schema';
@@ -14,6 +14,7 @@ import * as argon2 from 'argon2';
 import { API_VERSION, APP_PREFIX, LAST_USED_HASH } from 'src/configs';
 import { LRUCache } from 'lru-cache/raw';
 import type { CachedApiKey } from 'src/configs/interface';
+import type { DBClient } from '~/database/db';
 
 const MAX_API_KEYS_PER_USER = 10;
 
@@ -24,7 +25,7 @@ const localCache = new LRUCache<string, CachedApiKey>({
 @Injectable()
 export class ApiKeyService {
   constructor(
-    @Inject(DRRIZLE_DB) private readonly db: DrizzleClient,
+    @Inject(DB_PROVIDER) private readonly db: DBClient,
     @Inject(REDIS_CLIENT) private readonly redis: Redis,
   ) {}
 
