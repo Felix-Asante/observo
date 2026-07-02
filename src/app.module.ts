@@ -7,11 +7,21 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from '~/database/database.module';
 import { RedisModule } from '~/infra/redis.module';
 import { CacheModule } from '~/infra/cache.module';
+import { AuthModule } from '@thallesp/nestjs-better-auth';
+import { auth } from '~/infra/auth';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    AuthModule.forRoot({
+      auth,
+      bodyParser: {
+        json: { limit: '2mb' },
+        urlencoded: { limit: '2mb', extended: true },
+        rawBody: true,
+      },
     }),
     ApiKeyModule,
     BillingModule,
