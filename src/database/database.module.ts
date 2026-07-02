@@ -27,5 +27,6 @@ export type DrizzleClient = ReturnType<typeof drizzle>;
       },
     },
   ],
+  exports: [DRRIZLE_DB],
 })
 export class DatabaseModule {}
