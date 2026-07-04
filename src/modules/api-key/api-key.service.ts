@@ -3,18 +3,19 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
-import { DB_PROVIDER } from '~/database/database-provider';
-import { REDIS_CLIENT } from 'src/infra/redis.module';
-import { Redis } from 'ioredis';
-import { ApiKey } from './api-key.schema';
-import { and, count, eq } from 'drizzle-orm';
-import { randomBytes, randomUUID } from 'node:crypto';
 import * as argon2 from 'argon2';
-import { API_VERSION, APP_PREFIX, LAST_USED_HASH } from 'src/configs';
+import { and, count, eq } from 'drizzle-orm';
+import { Redis } from 'ioredis';
 import { LRUCache } from 'lru-cache/raw';
+import { randomBytes, randomUUID } from 'node:crypto';
+import { API_VERSION, APP_PREFIX, LAST_USED_HASH } from 'src/configs';
 import type { CachedApiKey } from 'src/configs/interface';
+import { REDIS_CLIENT } from 'src/infra/redis.module';
+import { DB_PROVIDER } from '~/database/database-provider';
 import type { DBClient } from '~/database/db';
+import { ApiKey } from './api-key.schema';
 
 const MAX_API_KEYS_PER_USER = 10;
 
@@ -36,7 +37,7 @@ export class ApiKeyService {
       .where(eq(ApiKey.user_id, userId));
 
     if (result.count >= MAX_API_KEYS_PER_USER) {
-      throw new BadRequestException(
+      throw new UnprocessableEntityException(
         'You have reached the maximum number of API keys. Please contact support to upgrade your plan.',
       );
     }
@@ -82,16 +83,22 @@ export class ApiKeyService {
     const { versionKeyId, cacheKey } = this.getCacheKeys(keyId);
     await this.redis.del(cacheKey);
     localCache.delete(versionKeyId);
+
+    return { success: true };
   }
 
   async regenerateApiKey(userId: string, keyId: string) {
-    const apiKey = await this.db
+    const [apiKey] = await this.db
       .select()
       .from(ApiKey)
       .where(and(eq(ApiKey.user_id, userId), eq(ApiKey.id, keyId)));
 
     if (!apiKey) {
       throw new NotFoundException('API key not found');
+    }
+
+    if (apiKey.revokedAt) {
+      throw new BadRequestException('API key has been revoked');
     }
 
     const { plainTextKey, keyId: newKeyId } = this.generateApiKey();

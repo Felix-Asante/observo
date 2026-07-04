@@ -25,6 +25,9 @@ const authConfig = {
     ENV.NODE_ENV === Environment.PRODUCTION ? [ENV.FRONTEND_URL] : undefined,
   advanced: {
     disableOriginCheck: ENV.NODE_ENV === Environment.DEVELOPMENT,
+    database: {
+      generateId: 'uuid' as const,
+    },
   },
   basePath: '/api/v1/auth',
 };

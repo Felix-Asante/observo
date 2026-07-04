@@ -1,35 +1,47 @@
-import { Controller, Delete, Get, Param, Post, Req } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  AuthGuard,
+  Session,
+  type UserSession,
+} from '@thallesp/nestjs-better-auth';
 import { ApiKeyService } from './api-key.service';
 
-type RequestWithUser = Request & { user: { id: string } };
 @Controller('api-keys')
+@UseGuards(AuthGuard)
 export class ApiKeyController {
   constructor(private readonly apiKeyService: ApiKeyService) {}
 
   @Post()
-  async createApiKey(@Req() req: RequestWithUser) {
-    return this.apiKeyService.createApiKey(req.user.id);
+  async createApiKey(@Session() session: UserSession) {
+    return this.apiKeyService.createApiKey(session.user.id);
   }
 
   @Post(':keyId/regenerate')
   async regenerateApiKey(
     @Param('keyId') keyId: string,
-    @Req() req: RequestWithUser,
+    @Session() session: UserSession,
   ) {
-    return this.apiKeyService.regenerateApiKey(req.user.id, keyId);
+    return this.apiKeyService.regenerateApiKey(session.user.id, keyId);
   }
 
   @Get()
-  async listApiKeys(@Req() req: RequestWithUser) {
-    return this.apiKeyService.listApiKeys(req.user.id);
+  async listApiKeys(@Session() session: UserSession) {
+    return this.apiKeyService.listApiKeys(session.user.id);
   }
 
   @Delete(':keyId')
   async deleteApiKey(
     @Param('keyId') keyId: string,
-    @Req() req: RequestWithUser,
+    @Session() session: UserSession,
   ) {
-    return this.apiKeyService.deleteApiKey(req.user.id, keyId);
+    return this.apiKeyService.deleteApiKey(session.user.id, keyId);
   }
 
   @Get(':keyId/last-used')

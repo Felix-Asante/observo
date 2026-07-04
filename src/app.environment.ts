@@ -25,4 +25,5 @@ export const ENV = {
   REDIS_PORT: env('REDIS_PORT').required().asString(),
   REDIS_PASSWORD: env('REDIS_PASSWORD').asString(),
   REDIS_DB: env('REDIS_DB').required().asString(),
+  REDIS_KEY_SECRET: env('REDIS_KEY_SECRET').required().asString(),
 };
