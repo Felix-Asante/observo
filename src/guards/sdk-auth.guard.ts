@@ -95,7 +95,7 @@ export class SDKAuthGuard implements CanActivate {
           revokedAt: ApiKey.revokedAt,
         })
         .from(ApiKey)
-        .where(and(eq(ApiKey.key, keyId), isNull(ApiKey.revokedAt)));
+        .where(and(eq(ApiKey.id, keyId), isNull(ApiKey.revokedAt)));
 
       if (!apiKeyRecord) throw new UnauthorizedException('Unauthorized');
 

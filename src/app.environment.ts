@@ -26,4 +26,8 @@ export const ENV = {
   REDIS_PASSWORD: env('REDIS_PASSWORD').asString(),
   REDIS_DB: env('REDIS_DB').required().asString(),
   REDIS_KEY_SECRET: env('REDIS_KEY_SECRET').required().asString(),
+  CLICKHOUSE_URL: env('CLICKHOUSE_URL').required().asUrlString(),
+  CLICKHOUSE_USERNAME: env('CLICKHOUSE_USERNAME').required().asString(),
+  CLICKHOUSE_PASSWORD: env('CLICKHOUSE_PASSWORD').required().asString(),
+  CLICKHOUSE_DATABASE: env('CLICKHOUSE_DATABASE').required().asString(),
 };
