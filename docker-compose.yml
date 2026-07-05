@@ -11,8 +11,6 @@ services:
       - 6379:6379
     volumes:
       - redis_data:/data
-    networks:
-      - observo_network
     command: redis-server --requirepass observo --appendonly yes --maxmemory-policy allkeys-lru
     restart: unless-stopped
     healthcheck:
@@ -22,5 +20,52 @@ services:
       retries: 3
       start_period: 30s
 
+  clickhouse:
+    image: clickhouse/clickhouse-server:25.7-alpine
+    container_name: observo-clickhouse
+    restart: unless-stopped
+    environment:
+      - CLICKHOUSE_DB=observo_logs
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_PASSWORD=
+      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
+    ports:
+      - '8123:8123'
+      - '9000:9000'
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    ulimits:
+      nofile: 262144
+    healthcheck:
+      test: ['CMD', 'wget', '--spider', '-q', 'http://localhost:8123/ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  ch-ui:
+    image: ghcr.io/caioricciuti/ch-ui:latest
+    depends_on:
+      - clickhouse
+    environment:
+      - VITE_CLICKHOUSE_URL=http://host.docker.internal:8123
+      - VITE_CLICKHOUSE_USER=default
+      # - VITE_CLICKHOUSE_PASS=""
+    ports:
+      - '5521:5521/tcp'
+
+  nats:
+    image: nats:2.10-alpine
+    container_name: observo-logs-nats
+    restart: unless-stopped
+    ports:
+      - '4222:4222'
+      - '8222:8222'
+    volumes:
+      - nats_data:/var/lib/nats
+    command: ['nats-server', '-js', '-m', '8222']
+
 volumes:
   redis_data:
+  clickhouse_data:
+  nats_data:

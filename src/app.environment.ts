@@ -30,4 +30,5 @@ export const ENV = {
   CLICKHOUSE_USERNAME: env('CLICKHOUSE_USERNAME').required().asString(),
   CLICKHOUSE_PASSWORD: env('CLICKHOUSE_PASSWORD').required().asString(),
   CLICKHOUSE_DATABASE: env('CLICKHOUSE_DATABASE').required().asString(),
+  NATS_URL: env('NATS_URL').required().asString(),
 };
