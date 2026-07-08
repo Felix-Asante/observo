@@ -1,4 +1,5 @@
 import { getNats } from './index';
+import { LOG_INGEST_SUBJECT } from './constants';
 
 export async function publishLogBatch(
   keyId: string,
@@ -11,7 +12,7 @@ export async function publishLogBatch(
   const js = natsConnection.jetstream();
 
   await js.publish(
-    'logs.ingest',
+    LOG_INGEST_SUBJECT,
     jc.encode({
       keyId,
       userId,

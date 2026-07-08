@@ -11,10 +11,10 @@ services:
       - 6379:6379
     volumes:
       - redis_data:/data
-    command: redis-server --requirepass observo --appendonly yes --maxmemory-policy allkeys-lru
+    command: redis-server --requirepass ${REDIS_PASSWORD:-observo} --appendonly yes --maxmemory-policy allkeys-lru
     restart: unless-stopped
     healthcheck:
-      test: ['CMD', 'redis-cli', '-a', '${REDIS_PASSWORD:-observo }', 'ping']
+      test: ['CMD', 'redis-cli', '-a', '${REDIS_PASSWORD:-observo}', 'ping']
       interval: 10s
       timeout: 5s
       retries: 3

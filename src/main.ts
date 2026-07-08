@@ -1,6 +1,7 @@
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { createLogsTable } from './clickhouse/schema';
 import { startLogConsumer } from './nats/consumer';
 import { initNatsStream } from './nats/init-stream';
 
@@ -9,10 +10,14 @@ async function bootstrap() {
     bodyParser: true,
   });
 
+  await createLogsTable().catch((error) =>
+    console.error('ClickHouse schema init error', error),
+  );
   await initNatsStream().catch((error) =>
     console.error('NATS stream init error', error),
   );
-  await startLogConsumer().catch((error) =>
+
+  void startLogConsumer().catch((error) =>
     console.error('Log consumer error', error),
   );
 
@@ -32,7 +37,7 @@ async function bootstrap() {
       whitelist: true,
       transform: true,
       forbidNonWhitelisted: true,
-      forbidUnknownValues: true,
+      transformOptions: { enableImplicitConversion: true },
     }),
   );
   await app.listen(process.env.PORT ?? 3000);
