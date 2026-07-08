@@ -38,6 +38,8 @@ export class SDKAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<RequestWithUser>();
     const apiKey = request.headers['x-api-key'] as string | undefined;
 
+    console.log('SDKAuthGuard apiKey', apiKey);
+
     if (!apiKey) throw new UnauthorizedException('Unauthorized');
 
     const keyId = extractApiKey(apiKey);
@@ -50,6 +52,7 @@ export class SDKAuthGuard implements CanActivate {
     try {
       const c = localCache.get(lrukey);
       if (c && c.apiKeyDigest === digestedApiKey && c.expiresAt > now) {
+        console.log('API key is in local cache');
         request.user = {
           id: c.userId,
           keyId,
@@ -64,10 +67,15 @@ export class SDKAuthGuard implements CanActivate {
       const rDigest = await this.redis.hgetall(rKeyDigest);
 
       if (rDigest?.invalid === '1') {
+        console.log('SDKAuthGuard rDigest.invalid === 1', rDigest);
         throw new UnauthorizedException('Unauthorized');
       }
 
       if (rDigest?.apiKeyDigest && rDigest?.apiKeyDigest !== digestedApiKey) {
+        console.log(
+          'SDKAuthGuard rDigest.apiKeyDigest !== digestedApiKey',
+          rDigest,
+        );
         throw new UnauthorizedException('Unauthorized');
       }
 
@@ -82,6 +90,8 @@ export class SDKAuthGuard implements CanActivate {
           id: rDigest.userId,
           keyId,
         };
+
+        console.log('API key is in redis');
 
         void this.trackApiKeyLastUsed(keyId);
         return true;
@@ -99,12 +109,13 @@ export class SDKAuthGuard implements CanActivate {
 
       if (!apiKeyRecord) throw new UnauthorizedException('Unauthorized');
 
-      const isValid = await argon2.verify(apiKeyRecord.key, keyId);
+      const isValid = await argon2.verify(apiKeyRecord.key, apiKey);
       if (!isValid) {
         await this.redis.hset(rKeyDigest, {
           invalid: '1',
         });
         await this.redis.expire(rKeyDigest, REDIS_HARD_TTL_MS);
+        console.log('SDKAuthGuard isValid === false', isValid);
         throw new UnauthorizedException('Unauthorized');
       }
 
@@ -123,7 +134,7 @@ export class SDKAuthGuard implements CanActivate {
       void this.trackApiKeyLastUsed(keyId);
       return true;
     } catch (error) {
-      console.error(error);
+      console.error('SDKAuthGuard error', error);
       throw new UnauthorizedException('Unauthorized');
     }
   }
