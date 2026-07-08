@@ -3,22 +3,16 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { startLogConsumer } from './nats/consumer';
 import { initNatsStream } from './nats/init-stream';
-import { createLogsTable } from './clickhouse/schema';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bodyParser: true,
   });
 
-  await createLogsTable().catch((error) =>
-    console.error('ClickHouse schema init error', error),
-  );
   await initNatsStream().catch((error) =>
     console.error('NATS stream init error', error),
   );
-
-  // Don't await — the consumer runs forever
-  void startLogConsumer().catch((error) =>
+  await startLogConsumer().catch((error) =>
     console.error('Log consumer error', error),
   );
 
@@ -43,5 +37,4 @@ async function bootstrap() {
   );
   await app.listen(process.env.PORT ?? 3000);
 }
-
 bootstrap();

@@ -1,4 +1,4 @@
-import { AckPolicy, DeliverPolicy } from 'nats';
+import { consumerOpts } from 'nats';
 import { getNats } from './index';
 import { ENV } from '~/app.environment';
 import Redis from 'ioredis';
@@ -43,19 +43,28 @@ export async function startLogConsumer() {
   const subject = 'logs.ingest';
   const streamName = 'Observo_Logs';
 
+  const opts = consumerOpts();
+  opts.durable(durable);
+  opts.deliverAll();
+  opts.deliverLast();
+  opts.deliverLastPerSubject();
+  opts.deliverLastPerSubject();
+
   try {
-    await jsm.consumers.info(streamName, durable);
-  } catch {
-    await jsm.consumers.add(streamName, {
-      durable_name: durable,
-      filter_subject: subject,
-      ack_policy: AckPolicy.Explicit,
-      deliver_policy: DeliverPolicy.All,
-    });
+    const existingConsumer = await jsm.consumers.info(streamName, durable);
+    const cfg = existingConsumer.config;
+    if (cfg && !cfg.deliver_subject) {
+      console.warn(
+        `Jetstream durable ${durable} is pulled-based(missing deliver_subject)`,
+      );
+
+      await jsm.consumers.delete(streamName, durable);
+    }
+  } catch (error) {
+    console.error(error);
   }
 
-  const consumer = await js.consumers.get(streamName, durable);
-  const sub = await consumer.consume();
+  const sub = await js.subscribe(subject, opts);
 
   console.log('Observo Log Consumer started');
 
