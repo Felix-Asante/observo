@@ -1,0 +1,38 @@
+# dependencies
+node_modules
+
+# build outputs
+dist
+build
+.next
+.turbo
+*.tsbuildinfo
+
+# env
+.env
+.env.*
+!.env.example
+
+# log files
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# test / coverage
+coverage
+.nyc_output
+
+# OS / IDE
+.DS_Store
+.idea
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# temp
+.temp
+.tmp
+tmp
+sdk/pnpm-lock.yaml

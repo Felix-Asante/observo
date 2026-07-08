@@ -1,0 +1,15 @@
+{
+  "name": "observo",
+  "private": true,
+  "packageManager": "pnpm@9.15.9",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "api:dev": "turbo run dev --filter=@observo/api"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.4"
+  }
+}
