@@ -44,6 +44,9 @@ importers:
       argon2:
         specifier: ^0.44.0
         version: 0.44.0
+      better-auth:
+        specifier: ^1.6.23
+        version: 1.6.23(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@neondatabase/serverless@1.1.0)(@types/pg@8.20.0)(kysely@0.29.3)(pg@8.22.0))(pg@8.22.0)
       class-transformer:
         specifier: ^0.5.1
         version: 0.5.1
@@ -159,8 +162,6 @@ importers:
       typescript-eslint:
         specifier: ^8.20.0
         version: 8.63.0(eslint@9.39.4)(typescript@5.9.3)
-
-  sdk: {}
 
 packages:
 
