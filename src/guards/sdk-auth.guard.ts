@@ -26,7 +26,7 @@ import { digest, extractApiKey } from '~/utils/api-key';
 
 const localCache = new LRUCache<string, CachedApiKey>({ max: 100_000 });
 
-type RequestWithUser = Request & { user: { id: string; keyId: string } };
+export type RequestWithUser = Request & { user: { id: string; keyId: string } };
 
 @Injectable()
 export class SDKAuthGuard implements CanActivate {

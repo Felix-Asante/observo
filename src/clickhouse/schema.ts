@@ -3,6 +3,12 @@ import { clickhouseClient } from './client';
 export async function createLogsTable() {
   await clickhouseClient.command({
     query: `
+      CREATE DATABASE IF NOT EXISTS logs;
+    `,
+  });
+
+  await clickhouseClient.command({
+    query: `
       CREATE TABLE IF NOT EXISTS logs.events (
       keyId String,
       userId String,

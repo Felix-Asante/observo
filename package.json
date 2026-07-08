@@ -38,6 +38,7 @@
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.1",
     "env-var": "^7.5.0",
+    "express": "^5.2.1",
     "ioredis": "^5.11.1",
     "lru-cache": "^11.5.1",
     "nats": "^2.29.3",

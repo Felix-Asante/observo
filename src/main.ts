@@ -1,11 +1,16 @@
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { startLogConsumer } from './nats/consumer';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    bodyParser: false,
+    bodyParser: true,
   });
+
+  await startLogConsumer().catch((error) =>
+    console.error('Log consumer error', error),
+  );
 
   app.setGlobalPrefix('api');
   app.enableVersioning({

@@ -1,19 +1,26 @@
-import { RetentionPolicy, StorageType } from 'nats';
 import { getNats } from './index';
 
-export async function initNatStream() {
+const streamName = 'Observo_Logs';
+const subject = 'logs.ingest';
+
+export async function initNatsStream() {
   const { natsConnection } = await getNats();
 
   const jsm = await natsConnection.jetstreamManager();
 
-  await jsm.streams.add({
-    name: 'Observo.Logs',
-    subjects: ['Observo.Logs.*'],
-    retention: RetentionPolicy.Workqueue,
-    storage: StorageType.File,
-    max_age: 0,
-    max_msgs: -1,
-  });
-
-  console.log('NATS stream Observo.Logs initialized');
+  try {
+    const existing = await jsm.streams.info(streamName);
+    const subjects = existing.config.subjects ?? [];
+    if (!subjects.includes(subject)) {
+      await jsm.streams.update(streamName, {
+        subjects: [...subjects, subject],
+      });
+      console.log(`NATS stream ${streamName} updated with subject ${subject}`);
+    }
+    console.log(
+      `NATS stream ${streamName} initialized with subject ${subject}`,
+    );
+  } catch (error) {
+    console.error('NATS stream initialization error', error);
+  }
 }

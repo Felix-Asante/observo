@@ -5,3 +5,5 @@ export const LAST_USED_HASH = `${APP_PREFIX}:api_key:last_used:${API_VERSION}`;
 export const LAST_USED_DEBOUNCE_SEC = 60;
 export const LRU_SOFT_TTL_MS = 1000 * 60 * 5;
 export const REDIS_HARD_TTL_MS = 1000 * 60 * 10;
+
+export const MAX_LIMIT = 500;
