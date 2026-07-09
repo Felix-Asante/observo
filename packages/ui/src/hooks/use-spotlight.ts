@@ -1,9 +1,5 @@
 import { useCallback, useRef } from "react";
 
-/**
- * Drives the `.spotlight` utility: tracks the cursor and writes
- * --mx / --my custom properties for the radial highlight.
- */
 export function useSpotlight<T extends HTMLElement = HTMLDivElement>() {
   const ref = useRef<T | null>(null);
 
