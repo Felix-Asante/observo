@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@theme {
+  --primary: #2a8af6;
+  --purple-1000: #a853ba;
+  --red-1000: #e92a67;
+
+  --color-primary: var(--primary);
+  --color-purple: var(--purple-1000);
+  --color-red-1000: var(--red-1000);
+}

@@ -1,0 +1,19 @@
+{
+  "exports": {
+    "./styles.css": "./dist/index.css",
+    "./*": "./dist/*.js"
+  },
+  "scripts": {
+    "build:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
+    "build:components": "tsc",
+    "dev:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch",
+    "dev:components": "tsc --watch"
+  },
+  "devDependencies": {
+    "@observo/tailwind-config": "workspace:*",
+    "@tailwindcss/cli": "^4.1.5",
+    "@tailwindcss/postcss": "^4.1.5",
+    "autoprefixer": "^10.4.20",
+    "tailwindcss": "^4.1.5"
+  }
+}
