@@ -1,5 +1,6 @@
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 
+import { NotFound } from '#/components/not-found'
 import { site } from '#/data/site'
 import appCss from '../styles.css?url'
 
@@ -56,6 +57,7 @@ export const Route = createRootRoute({
       },
     ],
   }),
+  notFoundComponent: NotFound,
   shellComponent: RootDocument,
 })
 
