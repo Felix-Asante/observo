@@ -1,0 +1,4 @@
+@import '@observo/tailwind-config';
+
+/* Scan the shared UI package source for Tailwind classes */
+@source '../../../packages/ui/src';
