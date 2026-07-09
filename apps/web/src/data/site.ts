@@ -6,6 +6,7 @@ export const site = {
     'Structured logs, traces, metrics, and alerts on a ClickHouse-powered engine. Search billions of events in milliseconds. Set up in under a minute.',
   ogImage: 'https://observo.dev/og.png',
   twitter: '@observodev',
+  version: 'v1.0.2',
 } as const
 
 export const navLinks = [

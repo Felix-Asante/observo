@@ -1,5 +1,6 @@
 import { ArrowRight } from 'lucide-react'
-import { ButtonLink, Section } from '@observo/ui'
+import { Link } from '@tanstack/react-router'
+import { ButtonLink, Section, buttonVariants } from '@observo/ui'
 
 import { Reveal } from '#/components/animations/reveal'
 
@@ -28,10 +29,10 @@ export function Cta() {
               your dashboards will finally agree with each other.
             </p>
             <div className="mt-9 flex flex-wrap items-center justify-center gap-3.5">
-              <ButtonLink href="#" size="lg">
+              <Link to="/sign-up" className={buttonVariants({ size: 'lg' })}>
                 Get started
                 <ArrowRight className="size-4" aria-hidden />
-              </ButtonLink>
+              </Link>
               <ButtonLink href="#" variant="secondary" size="lg">
                 View docs
               </ButtonLink>

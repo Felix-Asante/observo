@@ -1,10 +1,12 @@
 import { ArrowRight } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
 import {
   Badge,
   ButtonLink,
   Container,
   GradientText,
   StatusDot,
+  buttonVariants,
 } from '@observo/ui'
 
 import { Reveal } from '#/components/animations/reveal'
@@ -52,10 +54,10 @@ export function Hero() {
 
           <Reveal delay={0.18}>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-3.5">
-              <ButtonLink href="#cta" size="lg">
+              <Link to="/sign-up" className={buttonVariants({ size: 'lg' })}>
                 Get started
                 <ArrowRight className="size-4" aria-hidden />
-              </ButtonLink>
+              </Link>
               <ButtonLink href="#pricing" variant="secondary" size="lg">
                 View pricing
               </ButtonLink>

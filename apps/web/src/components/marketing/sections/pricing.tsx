@@ -1,10 +1,11 @@
 import { Check } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
 import {
   Badge,
-  ButtonLink,
   Card,
   Section,
   SectionHeading,
+  buttonVariants,
   cn,
 } from '@observo/ui'
 
@@ -68,13 +69,17 @@ export function Pricing() {
                 ))}
               </ul>
 
-              <ButtonLink
-                href="#cta"
-                variant={plan.highlighted ? 'primary' : 'secondary'}
-                className="mt-9 w-full"
+              <Link
+                to="/sign-up"
+                className={cn(
+                  buttonVariants({
+                    variant: plan.highlighted ? 'primary' : 'secondary',
+                  }),
+                  'mt-9 w-full',
+                )}
               >
                 {plan.cta}
-              </ButtonLink>
+              </Link>
             </Card>
           </RevealGroupItem>
         ))}

@@ -1,5 +1,6 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import { Spinner } from "./spinner";
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes } from "react";
 
 export const buttonVariants = cva(
@@ -30,21 +31,32 @@ export const buttonVariants = cva(
 type ButtonVariants = VariantProps<typeof buttonVariants>;
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
-  ButtonVariants;
+  ButtonVariants & {
+    /** Shows a spinner and disables the button. */
+    loading?: boolean;
+  };
 
 export function Button({
   className,
   variant,
   size,
   type = "button",
+  loading = false,
+  disabled,
+  children,
   ...props
 }: ButtonProps) {
   return (
     <button
       type={type}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
       className={cn(buttonVariants({ variant, size }), className)}
       {...props}
-    />
+    >
+      {loading ? <Spinner className="size-4 shrink-0" /> : null}
+      {children}
+    </button>
   );
 }
 

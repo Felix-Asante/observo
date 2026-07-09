@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Menu, X } from 'lucide-react'
-import { ButtonLink, Container, Logo, cn } from '@observo/ui'
+import { Link } from '@tanstack/react-router'
+import { Container, Logo, buttonVariants, cn } from '@observo/ui'
 
 import { navLinks } from '#/data/site'
 
@@ -50,12 +51,15 @@ export function Header() {
         </nav>
 
         <div className="hidden items-center gap-2.5 md:flex">
-          <ButtonLink href="#login" variant="ghost" size="sm">
+          <Link
+            to="/sign-in"
+            className={buttonVariants({ variant: 'ghost', size: 'sm' })}
+          >
             Sign in
-          </ButtonLink>
-          <ButtonLink href="#cta" size="sm">
+          </Link>
+          <Link to="/sign-up" className={buttonVariants({ size: 'sm' })}>
             Start free
-          </ButtonLink>
+          </Link>
         </div>
 
         <button
@@ -89,17 +93,21 @@ export function Header() {
               ))}
             </nav>
             <div className="mt-4 flex flex-col gap-2 border-t border-border-subtle pt-4">
-              <ButtonLink
-                href="#login"
-                variant="secondary"
-                size="md"
-                className="w-full"
+              <Link
+                to="/sign-in"
+                className={cn(
+                  buttonVariants({ variant: 'secondary', size: 'md' }),
+                  'w-full',
+                )}
               >
                 Sign in
-              </ButtonLink>
-              <ButtonLink href="#cta" size="md" className="w-full">
+              </Link>
+              <Link
+                to="/sign-up"
+                className={cn(buttonVariants({ size: 'md' }), 'w-full')}
+              >
                 Start free
-              </ButtonLink>
+              </Link>
             </div>
           </Container>
         </div>
