@@ -9,7 +9,7 @@ import {
   DropdownItem,
 } from '@observo/ui'
 
-import type { ApiKey } from '#/data/dashboard/types'
+import type { ApiKey } from '#/types/api-keys'
 
 export function KeyActions({ apiKey }: { apiKey: ApiKey }) {
   const [confirm, setConfirm] = useState<'regenerate' | 'revoke' | null>(null)

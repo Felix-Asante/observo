@@ -74,9 +74,8 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
           onOpenMobileNav={() => setMobileNavOpen(true)}
         />
         <motion.main
-          key={pathname}
-          initial={reducedMotion ? false : { opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={false}
+          animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
           className={cn(
             'mx-auto w-full max-w-[1600px] flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8',
