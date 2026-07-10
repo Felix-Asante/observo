@@ -1,6 +1,8 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 
 import { NotFound } from '#/components/not-found'
+import { Toaster } from '#/components/ui/toaster'
 import { site } from '#/data/site'
 import appCss from '../styles.css?url'
 
@@ -18,6 +20,8 @@ const structuredData = {
     priceCurrency: 'USD',
   },
 }
+
+const queryClient = new QueryClient()
 
 export const Route = createRootRoute({
   head: () => ({
@@ -68,7 +72,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
-        {children}
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+        <Toaster />
         <Scripts />
       </body>
     </html>

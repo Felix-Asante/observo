@@ -1,12 +1,18 @@
-import { useState } from 'react'
-import { Link, createFileRoute } from '@tanstack/react-router'
-import { Button, Checkbox, Divider, Input, PasswordInput } from '@observo/ui'
+import { Link, createFileRoute, useRouter } from '@tanstack/react-router'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Button, Divider } from '@observo/ui'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import { AuthFormHeader } from '#/components/auth/auth-form-header'
 import { AuthLayout } from '#/components/auth/auth-layout'
 import { OAuthButtons } from '#/components/auth/oauth-buttons'
 import { PasswordStrength } from '#/components/auth/password-strength'
-import type { FormEvent } from 'react'
+import { FormCheckbox, FormInput, FormPasswordInput } from '#/components/form'
+import { signUpSchema } from '#/validations/auth'
+import type { SignUpValues } from '#/validations/auth'
+import { useTransition } from 'react'
+import { toast } from '#/lib/toast'
+import { signUpAction } from '#/actions/auth-actions'
 
 export const Route = createFileRoute('/(auth)/sign-up')({
   head: () => ({
@@ -23,19 +29,33 @@ export const Route = createFileRoute('/(auth)/sign-up')({
 })
 
 function SignUpPage() {
-  const [password, setPassword] = useState('')
-  const [confirm, setConfirm] = useState('')
-  const [confirmError, setConfirmError] = useState<string | undefined>()
-  const [submitting, setSubmitting] = useState(false)
+  const form = useForm<SignUpValues>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      acceptTerms: false,
+    },
+    mode: 'onTouched',
+  })
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    if (password !== confirm) {
-      event.preventDefault()
-      setConfirmError('Passwords do not match')
-      return
-    }
-    setSubmitting(true)
-  }
+  const [isPending, startTransition] = useTransition()
+  const router = useRouter()
+
+  const password = form.watch('password')
+
+  const onSubmit = form.handleSubmit(async (values) => {
+    startTransition(async () => {
+      try {
+        await signUpAction({ data: values })
+        router.navigate({ to: '/dashboard' })
+      } catch (error) {
+        toast.fromError(error, 'Unable to create your workspace.')
+      }
+    })
+  })
 
   return (
     <AuthLayout>
@@ -48,86 +68,79 @@ function SignUpPage() {
 
       <Divider label="or continue with email" className="my-7" />
 
-      <form
-        method="POST"
-        action="/api/auth/sign-up/email"
-        className="space-y-5"
-        onSubmit={handleSubmit}
-      >
-        <input type="hidden" name="callbackURL" value="/dashboard" />
+      <FormProvider {...form}>
+        <form onSubmit={onSubmit} className="space-y-5" noValidate>
+          {form.formState.errors.root ? (
+            <p role="alert" className="text-sm text-error">
+              {form.formState.errors.root.message}
+            </p>
+          ) : null}
 
-        <Input
-          label="Full name"
-          name="name"
-          type="text"
-          autoComplete="name"
-          placeholder="Ada Lovelace"
-          required
-        />
+          <FormInput
+            name="name"
+            label="Full name"
+            type="text"
+            autoComplete="name"
+            placeholder="Ada Lovelace"
+          />
 
-        <Input
-          label="Email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          placeholder="you@company.com"
-          required
-        />
+          <FormInput
+            name="email"
+            label="Email"
+            type="email"
+            autoComplete="email"
+            placeholder="you@company.com"
+          />
 
-        <div className="space-y-3.5">
-          <PasswordInput
-            label="Password"
-            name="password"
+          <div className="space-y-3.5">
+            <FormPasswordInput
+              name="password"
+              label="Password"
+              autoComplete="new-password"
+              placeholder="••••••••••"
+            />
+            <PasswordStrength password={password || ''} />
+          </div>
+
+          <FormPasswordInput
+            name="confirmPassword"
+            label="Confirm password"
             autoComplete="new-password"
             placeholder="••••••••••"
-            minLength={8}
-            required
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
           />
-          <PasswordStrength password={password} />
-        </div>
 
-        <PasswordInput
-          label="Confirm password"
-          name="confirmPassword"
-          autoComplete="new-password"
-          placeholder="••••••••••"
-          required
-          value={confirm}
-          error={confirmError}
-          onChange={(event) => {
-            setConfirm(event.target.value)
-            setConfirmError(undefined)
-          }}
-        />
+          <FormCheckbox
+            name="acceptTerms"
+            label={
+              <>
+                I agree to the{' '}
+                <a
+                  href="#"
+                  className="cursor-pointer font-medium text-iris-300 transition-colors duration-200 hover:text-iris-200"
+                >
+                  Terms of Service
+                </a>{' '}
+                and{' '}
+                <a
+                  href="#"
+                  className="cursor-pointer font-medium text-iris-300 transition-colors duration-200 hover:text-iris-200"
+                >
+                  Privacy Policy
+                </a>
+              </>
+            }
+          />
 
-        <Checkbox
-          required
-          label={
-            <>
-              I agree to the{' '}
-              <a
-                href="#"
-                className="cursor-pointer font-medium text-iris-300 transition-colors duration-200 hover:text-iris-200"
-              >
-                Terms of Service
-              </a>{' '}
-              and{' '}
-              <a
-                href="#"
-                className="cursor-pointer font-medium text-iris-300 transition-colors duration-200 hover:text-iris-200"
-              >
-                Privacy Policy
-              </a>
-            </>
-          }
-        />
-
-        <Button type="submit" size="lg" loading={submitting} className="w-full">
-          Create workspace
-        </Button>
-      </form>
+          <Button
+            type="submit"
+            size="lg"
+            loading={form.formState.isSubmitting || isPending}
+            className="w-full"
+          >
+            Create workspace
+          </Button>
+        </form>
+      </FormProvider>
 
       <p className="mt-8 text-center text-sm text-ink-400">
         Already have an account?{' '}

@@ -40,7 +40,7 @@ export function PasswordStrength({ password }: { password: string }) {
         <div className="flex flex-1 gap-1.5" role="presentation">
           {requirements.map((_, index) => (
             <div
-              key={index}
+              key={`${index}-${password}`}
               className="h-1 flex-1 overflow-hidden rounded-full bg-ink-800"
             >
               <motion.div

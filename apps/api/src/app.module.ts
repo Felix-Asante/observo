@@ -10,6 +10,7 @@ import { CacheModule } from '~/infra/cache.module';
 import { AuthModule } from '@thallesp/nestjs-better-auth';
 import { auth } from '~/infra/auth';
 import { LogsModule } from './modules/logs/logs.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { LogsModule } from './modules/logs/logs.module';
     RedisModule,
     CacheModule,
     LogsModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

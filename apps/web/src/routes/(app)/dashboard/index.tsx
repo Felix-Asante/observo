@@ -27,6 +27,8 @@ import {
   topApps,
   volumeSeries,
 } from '#/data/dashboard/overview'
+import { getCurrentUserAction } from '#/actions/auth-actions'
+import { useQuery } from '@tanstack/react-query'
 
 export const Route = createFileRoute('/(app)/dashboard/')({
   head: () => ({ meta: [{ title: 'Overview · Observo' }] }),
@@ -34,6 +36,13 @@ export const Route = createFileRoute('/(app)/dashboard/')({
 })
 
 function OverviewPage() {
+  const { data: currentUser } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: getCurrentUserAction,
+  })
+
+  console.log({ currentUser })
+
   return (
     <>
       <PageHeader

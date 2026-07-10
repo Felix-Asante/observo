@@ -149,6 +149,7 @@ export class HttpClient {
         method: config.method,
         data: config.data,
         params: config.params,
+        baseURL: this.instance.defaults.baseURL,
       },
     });
     return await this.instance.request(config);

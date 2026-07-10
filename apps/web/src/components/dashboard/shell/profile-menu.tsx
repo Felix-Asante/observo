@@ -1,11 +1,27 @@
 import { useNavigate } from '@tanstack/react-router'
 import { LogOut, Settings, User } from 'lucide-react'
 import { Dropdown, DropdownItem, DropdownSeparator } from '@observo/ui'
+import { useTransition } from 'react'
 
 import { currentUser } from '#/data/dashboard/navigation'
+import { signOutAction } from '#/actions/auth-actions'
+import { toast } from '#/lib/toast'
 
 export function ProfileMenu() {
   const navigate = useNavigate()
+
+  const [_, startTransition] = useTransition()
+
+  const handleSignOut = () => {
+    startTransition(async () => {
+      try {
+        await signOutAction()
+        navigate({ to: '/sign-in' })
+      } catch (error) {
+        toast.fromError(error, 'Failed to sign out')
+      }
+    })
+  }
 
   return (
     <Dropdown
@@ -31,12 +47,10 @@ export function ProfileMenu() {
       </DropdownItem>
       <DropdownSeparator />
       {/* Better Auth default sign-out endpoint */}
-      <form method="POST" action="/api/auth/sign-out">
-        <DropdownItem type="submit" danger>
-          <LogOut className="size-3.5" aria-hidden />
-          Sign out
-        </DropdownItem>
-      </form>
+      <DropdownItem type="button" danger onClick={handleSignOut}>
+        <LogOut className="size-3.5" aria-hidden />
+        Sign out
+      </DropdownItem>
     </Dropdown>
   )
 }
