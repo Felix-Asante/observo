@@ -27,7 +27,7 @@ const authConfig = {
   advanced: {
     disableOriginCheck: !isProduction,
     defaultCookieAttributes: {
-      sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax',
+      sameSite: isProduction ? ('none' as const) : ('lax' as const),
       secure: isProduction,
       httpOnly: true,
     },

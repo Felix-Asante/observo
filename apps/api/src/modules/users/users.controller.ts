@@ -8,6 +8,6 @@ export class UsersController {
 
   @Get('me')
   getProfile(@Session() session: UserSession) {
-    return session.user;
+    return session;
   }
 }

@@ -2,18 +2,25 @@ import { Link, createFileRoute, useRouter } from '@tanstack/react-router'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Divider } from '@observo/ui'
 import { FormProvider, useForm } from 'react-hook-form'
+import { useTransition } from 'react'
+import { z } from 'zod'
 
 import { AuthFormHeader } from '#/components/auth/auth-form-header'
 import { AuthLayout } from '#/components/auth/auth-layout'
 import { OAuthButtons } from '#/components/auth/oauth-buttons'
 import { FormCheckbox, FormInput, FormPasswordInput } from '#/components/form'
+import { signInWithEmail } from '#/lib/auth'
+import { getSafeRedirect } from '#/lib/auth-guards'
+import { toast } from '#/lib/toast'
 import { signInSchema } from '#/validations/auth'
 import type { SignInValues } from '#/validations/auth'
-import { signInWithEmail } from '#/lib/auth'
-import { useTransition } from 'react'
-import { toast } from '#/lib/toast'
+
+const signInSearchSchema = z.object({
+  redirect: z.string().optional(),
+})
 
 export const Route = createFileRoute('/(auth)/sign-in')({
+  validateSearch: (search) => signInSearchSchema.parse(search),
   head: () => ({
     meta: [
       { title: 'Sign in · Observo' },
@@ -39,13 +46,14 @@ function SignInPage() {
   })
 
   const router = useRouter()
+  const { redirect: redirectTo } = Route.useSearch()
   const [isPending, startTransition] = useTransition()
 
   const onSubmit = form.handleSubmit(async (values) => {
     startTransition(async () => {
       try {
         await signInWithEmail(values)
-        router.navigate({ to: '/dashboard' })
+        router.navigate({ to: getSafeRedirect(redirectTo) })
       } catch (error) {
         toast.fromError(error, 'Unable to sign in. Check your credentials.')
       }
