@@ -1,51 +1,44 @@
 import { redirect } from '@tanstack/react-router'
+import { createIsomorphicFn, createServerFn } from '@tanstack/react-start'
+import { getRequestHeaders } from '@tanstack/react-start/server'
 
 import { authClient } from '#/lib/auth-client'
-import { createIsomorphicFn } from '@tanstack/react-start'
-import { httpClientWithCredentials } from './http'
-
-interface MeResponse {
-  session: {
-    expiresAt: string
-    token: string
-    createdAt: string
-    updatedAt: string
-    ipAddress: string
-    userAgent: string
-    userId: string
-    id: string
-  }
-  user: {
-    name: string
-    email: string
-    emailVerified: boolean
-    image: string | null
-    createdAt: string
-    updatedAt: string
-    id: string
-  }
-}
+import { httpClient } from './http'
 
 export type AuthSession = NonNullable<
   Awaited<ReturnType<typeof getAuthSession>>
 >
 
-export const getAuthSession = createIsomorphicFn()
-  .server(async () => {
-    try {
-      const session =
-        await httpClientWithCredentials.get<MeResponse>('/users/me')
-      return session.data
-    } catch {
+export const fetchAuthSession = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    const headers = getRequestHeaders()
+    const cookie = headers.get('cookie')
+
+    if (!cookie?.includes('better-auth.session_token')) {
       return null
     }
-  })
+
+    const response = await httpClient.get(`/auth/get-session`, {
+      headers: { cookie },
+    })
+
+    if (!response.data) {
+      return null
+    }
+
+    return response.data
+  },
+)
+
+export const getAuthSession = createIsomorphicFn()
+  .server(async () => fetchAuthSession())
   .client(async () => {
     const { data, error } = await authClient.getSession()
 
     if (error || !data?.session) {
       return null
     }
+
     return data
   })
 

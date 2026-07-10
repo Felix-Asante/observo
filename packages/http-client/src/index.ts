@@ -157,13 +157,11 @@ export class HttpClient {
 
   public async get<T = any>(
     endpoint: string,
-    params?: any,
     config?: AxiosRequestConfig,
   ): Promise<ApiResponse<T>> {
     return this.request<T>({
       method: "GET",
       url: endpoint,
-      params,
       ...config,
     });
   }

@@ -2,6 +2,8 @@ import { createHttpClient } from '@observo/http-client'
 import { createServerOnlyFn } from '@tanstack/react-start'
 import { getRequestHeaders } from '@tanstack/react-start/server'
 
+import { getApiBaseUrl } from '#/lib/api-url'
+
 export const getServerCookieForwardHeaders = createServerOnlyFn(() => {
   const requestHeaders = getRequestHeaders()
   const cookieHeader = requestHeaders.get('cookie')
@@ -16,14 +18,22 @@ export const getServerCookieForwardHeaders = createServerOnlyFn(() => {
 })
 
 export const httpClient = createHttpClient({
-  baseURL: import.meta.env.VITE_API_URL!,
+  baseURL: getApiBaseUrl(),
   headers: {
     'Content-Type': 'application/json',
   },
   withCredentials: true,
 })
 
-export const httpClientWithCredentials = createHttpClient({
-  baseURL: import.meta.env.VITE_API_URL!,
-  headers: getServerCookieForwardHeaders(),
-})
+export async function createServerHttpClient() {
+  const cookieHeaders = getServerCookieForwardHeaders()
+
+  return createHttpClient({
+    baseURL: getApiBaseUrl(),
+    headers: {
+      'Content-Type': 'application/json',
+      ...(cookieHeaders ?? {}),
+    },
+    withCredentials: true,
+  })
+}
