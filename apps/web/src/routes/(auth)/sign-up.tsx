@@ -12,7 +12,7 @@ import { signUpSchema } from '#/validations/auth'
 import type { SignUpValues } from '#/validations/auth'
 import { useTransition } from 'react'
 import { toast } from '#/lib/toast'
-import { signUpAction } from '#/actions/auth-actions'
+import { signUpWithEmail } from '#/lib/auth'
 
 export const Route = createFileRoute('/(auth)/sign-up')({
   head: () => ({
@@ -49,7 +49,7 @@ function SignUpPage() {
   const onSubmit = form.handleSubmit(async (values) => {
     startTransition(async () => {
       try {
-        await signUpAction({ data: values })
+        await signUpWithEmail(values)
         router.navigate({ to: '/dashboard' })
       } catch (error) {
         toast.fromError(error, 'Unable to create your workspace.')

@@ -4,7 +4,7 @@ import { Dropdown, DropdownItem, DropdownSeparator } from '@observo/ui'
 import { useTransition } from 'react'
 
 import { currentUser } from '#/data/dashboard/navigation'
-import { signOutAction } from '#/actions/auth-actions'
+import { signOut } from '#/lib/auth'
 import { toast } from '#/lib/toast'
 
 export function ProfileMenu() {
@@ -15,7 +15,7 @@ export function ProfileMenu() {
   const handleSignOut = () => {
     startTransition(async () => {
       try {
-        await signOutAction()
+        await signOut()
         navigate({ to: '/sign-in' })
       } catch (error) {
         toast.fromError(error, 'Failed to sign out')

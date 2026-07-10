@@ -9,7 +9,7 @@ import { OAuthButtons } from '#/components/auth/oauth-buttons'
 import { FormCheckbox, FormInput, FormPasswordInput } from '#/components/form'
 import { signInSchema } from '#/validations/auth'
 import type { SignInValues } from '#/validations/auth'
-import { signInAction } from '#/actions/auth-actions'
+import { signInWithEmail } from '#/lib/auth'
 import { useTransition } from 'react'
 import { toast } from '#/lib/toast'
 
@@ -44,7 +44,7 @@ function SignInPage() {
   const onSubmit = form.handleSubmit(async (values) => {
     startTransition(async () => {
       try {
-        await signInAction({ data: values })
+        await signInWithEmail(values)
         router.navigate({ to: '/dashboard' })
       } catch (error) {
         toast.fromError(error, 'Unable to sign in. Check your credentials.')

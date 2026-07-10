@@ -1,6 +1,7 @@
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { ENV, Environment } from './app.environment';
 import { createLogsTable } from './clickhouse/schema';
 import { startLogConsumer } from './nats/consumer';
 import { initNatsStream } from './nats/init-stream';
@@ -27,7 +28,8 @@ async function bootstrap() {
     defaultVersion: '1',
   });
   app.enableCors({
-    origin: true,
+    origin:
+      ENV.NODE_ENV === Environment.PRODUCTION ? ENV.FRONTEND_URL : true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true,
   });

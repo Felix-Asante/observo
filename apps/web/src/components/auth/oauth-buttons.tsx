@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { Button } from '@observo/ui'
 
+import { signInWithProvider } from '#/lib/auth'
+import { toast } from '#/lib/toast'
+
 const CALLBACK_URL = '/dashboard'
 
 type Provider = 'google' | 'github'
@@ -42,10 +45,6 @@ function GitHubIcon() {
   )
 }
 
-/**
- * Social sign-in via Better Auth's default social endpoint.
- * Each button is its own form posting provider + callbackURL.
- */
 export function OAuthButtons() {
   const [pending, setPending] = useState<Provider | null>(null)
 
@@ -58,29 +57,32 @@ export function OAuthButtons() {
     { id: 'github', label: 'GitHub', icon: <GitHubIcon /> },
   ]
 
+  const handleSocialSignIn = async (provider: Provider) => {
+    setPending(provider)
+    try {
+      await signInWithProvider(provider, CALLBACK_URL)
+    } catch (error) {
+      toast.fromError(error, `Unable to sign in with ${provider}.`)
+      setPending(null)
+    }
+  }
+
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
       {providers.map((provider) => (
-        <form
+        <Button
           key={provider.id}
-          method="POST"
-          action="/api/auth/sign-in/social"
-          onSubmit={() => setPending(provider.id)}
+          type="button"
+          variant="secondary"
+          size="lg"
+          loading={pending === provider.id}
+          disabled={pending !== null && pending !== provider.id}
+          className="w-full"
+          onClick={() => handleSocialSignIn(provider.id)}
         >
-          <input type="hidden" name="provider" value={provider.id} />
-          <input type="hidden" name="callbackURL" value={CALLBACK_URL} />
-          <Button
-            type="submit"
-            variant="secondary"
-            size="lg"
-            loading={pending === provider.id}
-            disabled={pending !== null && pending !== provider.id}
-            className="w-full"
-          >
-            {pending === provider.id ? null : provider.icon}
-            {provider.label}
-          </Button>
-        </form>
+          {pending === provider.id ? null : provider.icon}
+          {provider.label}
+        </Button>
       ))}
     </div>
   )

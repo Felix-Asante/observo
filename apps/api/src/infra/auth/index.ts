@@ -6,6 +6,8 @@ import * as schema from '../../database/schema';
 
 const { User, Session, Account, Verification, ...restSchema } = schema;
 
+const isProduction = ENV.NODE_ENV === Environment.PRODUCTION;
+
 const authConfig = {
   emailAndPassword: {
     enabled: true,
@@ -21,10 +23,14 @@ const authConfig = {
       verification: Verification,
     },
   }),
-  trustedOrigins:
-    ENV.NODE_ENV === Environment.PRODUCTION ? [ENV.FRONTEND_URL] : undefined,
+  trustedOrigins: [ENV.FRONTEND_URL],
   advanced: {
-    disableOriginCheck: ENV.NODE_ENV === Environment.DEVELOPMENT,
+    disableOriginCheck: !isProduction,
+    defaultCookieAttributes: {
+      sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax',
+      secure: isProduction,
+      httpOnly: true,
+    },
     database: {
       generateId: 'uuid' as const,
     },
