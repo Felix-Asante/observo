@@ -2,7 +2,7 @@ import { Download, Radio, Search } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { Select, buttonVariants, cn } from '@observo/ui'
 
-import { logApps, savedSearches, timeRanges } from '#/data/dashboard/logs'
+import { savedSearches, timeRanges } from '#/data/dashboard/logs'
 import type { LogLevel } from '#/data/dashboard/types'
 
 const levels: Array<LogLevel | 'all'> = [
@@ -67,7 +67,7 @@ export function FilterBar({ filters, onChange, disabled }: FilterBarProps) {
           ))}
         </Select>
 
-        <Select
+        {/* <Select
           label="Application"
           hideLabel
           value={filters.app}
@@ -81,7 +81,7 @@ export function FilterBar({ filters, onChange, disabled }: FilterBarProps) {
               {app}
             </option>
           ))}
-        </Select>
+        </Select> */}
 
         <Select
           label="Environment"

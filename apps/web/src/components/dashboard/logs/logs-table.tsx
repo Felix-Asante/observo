@@ -19,11 +19,11 @@ const LOG_COLUMNS: Array<TableLoaderColumn> = [
     skeletonClassName: 'h-5 w-14 rounded',
   },
   { header: 'Message', skeletonClassName: 'h-4 w-full max-w-md' },
-  {
-    header: 'App',
-    headerClassName: 'w-28',
-    skeletonClassName: 'h-4 w-16',
-  },
+  // {
+  //   header: 'App',
+  //   headerClassName: 'w-28',
+  //   skeletonClassName: 'h-4 w-16',
+  // },
   {
     header: 'Env',
     headerClassName: 'hidden w-28 xl:table-cell',
@@ -120,7 +120,7 @@ export function LogsTable({
               <Td className="max-w-0 truncate font-mono text-xs text-ink-100">
                 {log.message}
               </Td>
-              <Td className="font-mono text-xs text-ink-400">{log.appName}</Td>
+              {/* <Td className="font-mono text-xs text-ink-400">{log.appName}</Td> */}
               <Td className="hidden font-mono text-xs text-ink-500 xl:table-cell">
                 {log.environment}
               </Td>
