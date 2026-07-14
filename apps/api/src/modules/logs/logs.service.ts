@@ -47,7 +47,7 @@ export class LogsService {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
-    res.flushHeaders();
+    res.flushHeaders(); // flush headers to send data immediately
 
     const conditions = [`userId = {userId:String}`];
     if (type) {
