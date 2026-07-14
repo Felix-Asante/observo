@@ -7,4 +7,7 @@ export const API_ENDPOINTS = {
     regenerate: (keyId: string) => `/api-keys/${keyId}/regenerate`,
     revoke: (keyId: string) => `/api-keys/${keyId}`,
   },
+  logs: {
+    root: () => `/logs`,
+  },
 }

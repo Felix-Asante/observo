@@ -1,16 +1,66 @@
 import { SearchX } from 'lucide-react'
-import { EmptyState, TBody, THead, Table, Td, Th, Tr } from '@observo/ui'
+import { EmptyState, TBody, THead, Table, Td, Th, Tr, cn } from '@observo/ui'
 
 import { LevelBadge } from '#/components/dashboard/shared/level-badge'
+import { TableLoader } from '#/components/dashboard/shared/table-loader'
+import type { TableLoaderColumn } from '#/components/dashboard/shared/table-loader'
 import type { LogEvent } from '#/data/dashboard/types'
+import { DEFAULT_LOGS_LIMIT } from '#/lib/tanstack-query/query-options/logs-query-options'
+
+const LOG_COLUMNS: Array<TableLoaderColumn> = [
+  {
+    header: 'Time',
+    headerClassName: 'w-28',
+    skeletonClassName: 'h-4 w-20',
+  },
+  {
+    header: 'Level',
+    headerClassName: 'w-24',
+    skeletonClassName: 'h-5 w-14 rounded',
+  },
+  { header: 'Message', skeletonClassName: 'h-4 w-full max-w-md' },
+  {
+    header: 'App',
+    headerClassName: 'w-28',
+    skeletonClassName: 'h-4 w-16',
+  },
+  {
+    header: 'Env',
+    headerClassName: 'hidden w-28 xl:table-cell',
+    cellClassName: 'hidden xl:table-cell',
+    skeletonClassName: 'h-4 w-16',
+  },
+  {
+    header: 'Latency',
+    headerClassName: 'hidden w-20 text-right 2xl:table-cell',
+    cellClassName: 'hidden 2xl:table-cell',
+    skeletonClassName: 'ml-auto h-4 w-10',
+  },
+]
 
 type LogsTableProps = {
   logs: Array<LogEvent>
+  loading?: boolean
+  refreshing?: boolean
+  count?: number
+  totalCount?: number
   onSelect: (log: LogEvent) => void
   onClearFilters: () => void
 }
 
-export function LogsTable({ logs, onSelect, onClearFilters }: LogsTableProps) {
+export function LogsTable({
+  logs,
+  loading = false,
+  refreshing = false,
+  count,
+  totalCount,
+  onSelect,
+  onClearFilters,
+}: LogsTableProps) {
+  if (loading) {
+    return <TableLoader columns={LOG_COLUMNS} rows={8} label="Loading logs" />
+  }
+
   if (logs.length === 0) {
     return (
       <EmptyState
@@ -31,16 +81,20 @@ export function LogsTable({ logs, onSelect, onClearFilters }: LogsTableProps) {
   }
 
   return (
-    <div className="surface-card overflow-hidden rounded-xl">
+    <div
+      className={cn(
+        'surface-card overflow-hidden rounded-xl transition-opacity duration-200',
+        refreshing && 'opacity-60',
+      )}
+    >
       <Table>
         <THead>
           <tr>
-            <Th className="w-28">Time</Th>
-            <Th className="w-24">Level</Th>
-            <Th>Message</Th>
-            <Th className="w-28">App</Th>
-            <Th className="hidden w-28 xl:table-cell">Env</Th>
-            <Th className="hidden w-20 text-right 2xl:table-cell">Latency</Th>
+            {LOG_COLUMNS.map((column, index) => (
+              <Th key={index} className={column.headerClassName}>
+                {column.header}
+              </Th>
+            ))}
           </tr>
         </THead>
         <TBody>
@@ -79,10 +133,19 @@ export function LogsTable({ logs, onSelect, onClearFilters }: LogsTableProps) {
       </Table>
       <div className="flex items-center justify-between border-t border-border-subtle px-4 py-2.5 font-mono text-2xs text-ink-500">
         <span>
-          {logs.length} events · sorted by{' '}
-          <span className="text-ink-300">timestamp desc</span>
+          {count ?? logs.length} events
+          {totalCount !== undefined ? (
+            <>
+              {' '}
+              ·{' '}
+              <span className="text-ink-300">
+                {totalCount.toLocaleString()} in last 24h
+              </span>
+            </>
+          ) : null}{' '}
+          · sorted by <span className="text-ink-300">timestamp desc</span>
         </span>
-        <span>limit 100 · retention 30d</span>
+        <span>limit {DEFAULT_LOGS_LIMIT} · retention 30d</span>
       </div>
     </div>
   )

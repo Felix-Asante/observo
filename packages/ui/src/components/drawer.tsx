@@ -14,7 +14,13 @@ export type DrawerProps = {
 };
 
 /** Right-side detail panel. */
-export function Drawer({ open, onClose, label, className, children }: DrawerProps) {
+export function Drawer({
+  open,
+  onClose,
+  label,
+  className,
+  children,
+}: DrawerProps) {
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -43,7 +49,7 @@ export function Drawer({ open, onClose, label, className, children }: DrawerProp
       <div
         aria-hidden
         onClick={onClose}
-        className="animate-fade-in absolute inset-0 bg-ink-950/60 backdrop-blur-[2px]"
+        className="animate-fade-in absolute inset-0 bg-ink-950/30 backdrop-blur-[1px]"
       />
       <div
         ref={panelRef}

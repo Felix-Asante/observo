@@ -309,7 +309,34 @@ export const timeRanges = [
 ] as const
 
 export const savedSearches = [
-  { label: 'Prod errors', query: 'level:error env:production' },
-  { label: 'Slow queries', query: 'subsystem:db latency>500' },
-  { label: 'Failed auth', query: 'security.auth_status:failed' },
+  {
+    label: 'Prod errors',
+    filters: {
+      search: '',
+      level: 'error',
+      app: 'all',
+      environment: 'production',
+      range: '24h',
+    },
+  },
+  {
+    label: 'Errors',
+    filters: {
+      search: '',
+      level: 'error',
+      app: 'all',
+      environment: 'all',
+      range: '24h',
+    },
+  },
+  {
+    label: 'Warnings',
+    filters: {
+      search: '',
+      level: 'warning',
+      app: 'all',
+      environment: 'all',
+      range: '24h',
+    },
+  },
 ] as const
