@@ -63,7 +63,7 @@ function ApiKeysPage() {
       {isError ? (
         <div
           role="alert"
-          className="mb-4 flex flex-col gap-3 rounded-lg border border-error/30 bg-error/[0.06] px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+          className="mb-4 flex flex-col gap-3 rounded-lg border border-error/30 bg-error/6 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
         >
           <div className="flex items-start gap-2.5">
             <AlertCircle
