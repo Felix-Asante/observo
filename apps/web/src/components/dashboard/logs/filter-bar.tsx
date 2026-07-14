@@ -67,22 +67,6 @@ export function FilterBar({ filters, onChange, disabled }: FilterBarProps) {
           ))}
         </Select>
 
-        {/* <Select
-          label="Application"
-          hideLabel
-          value={filters.app}
-          onChange={(event) => set({ app: event.target.value })}
-          className="w-32"
-          disabled={disabled}
-        >
-          <option value="all">All apps</option>
-          {logApps.map((app) => (
-            <option key={app} value={app}>
-              {app}
-            </option>
-          ))}
-        </Select> */}
-
         <Select
           label="Environment"
           hideLabel

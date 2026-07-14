@@ -1,5 +1,5 @@
 import { useNavigate } from '@tanstack/react-router'
-import { LogOut, Settings, User } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import { Dropdown, DropdownItem, DropdownSeparator } from '@observo/ui'
 import { useTransition } from 'react'
 
@@ -41,17 +41,6 @@ export function ProfileMenu() {
         <p className="text-sm font-medium text-ink-50">{session.user.name}</p>
         <p className="truncate text-xs text-ink-500">{session.user.email}</p>
       </div>
-      <DropdownSeparator />
-      <DropdownItem onClick={() => navigate({ to: '/dashboard/settings' })}>
-        <User className="size-3.5" aria-hidden />
-        Profile
-      </DropdownItem>
-      <DropdownItem
-        onClick={() => navigate({ to: '/dashboard/settings/security' })}
-      >
-        <Settings className="size-3.5" aria-hidden />
-        Security
-      </DropdownItem>
       <DropdownSeparator />
       <DropdownItem type="button" danger onClick={handleSignOut}>
         <LogOut className="size-3.5" aria-hidden />

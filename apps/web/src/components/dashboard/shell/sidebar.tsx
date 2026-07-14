@@ -3,7 +3,6 @@ import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { Logo, StatusDot, cn } from '@observo/ui'
 
 import { navSections } from '#/data/dashboard/navigation'
-import { WorkspaceSwitcher } from './workspace-switcher'
 
 type SidebarProps = {
   collapsed: boolean
@@ -16,7 +15,6 @@ export function Sidebar({ collapsed, onToggle, onNavigate }: SidebarProps) {
 
   return (
     <div className="flex h-full flex-col border-r border-border-subtle bg-ink-900/60">
-      {/* Brand */}
       <div
         className={cn(
           'flex h-14 shrink-0 items-center border-b border-border-subtle px-4',
@@ -28,12 +26,6 @@ export function Sidebar({ collapsed, onToggle, onNavigate }: SidebarProps) {
         </Link>
       </div>
 
-      {/* Workspace */}
-      {/* <div className={cn('px-3 pt-3', collapsed && 'px-2')}>
-        <WorkspaceSwitcher collapsed={collapsed} />
-      </div> */}
-
-      {/* Navigation */}
       <nav
         aria-label="Dashboard navigation"
         className={cn('flex-1 overflow-y-auto px-3 py-4', collapsed && 'px-2')}

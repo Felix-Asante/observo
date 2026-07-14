@@ -1,11 +1,12 @@
-/**
- * Types mirroring the Observo API (apps/api) so every page is ready
- * to plug into the real endpoints later.
- */
-
 /** Matches the `type` enum on `AddLogDto` / ClickHouse `logs.events.type`. */
 export type LogLevel =
-  'info' | 'error' | 'warning' | 'debug' | 'trace' | 'audit' | 'success'
+  | 'info'
+  | 'error'
+  | 'warning'
+  | 'debug'
+  | 'trace'
+  | 'audit'
+  | 'success'
 
 /** Matches `importance` on `AddLogDto`. */
 export type LogImportance = 'critical' | 'high' | 'medium' | 'low'
@@ -34,44 +35,4 @@ export type LogEvent = {
   traceId?: string
   /** Parsed `track` / `security` / raw payload for the JSON viewer. */
   payload: Record<string, unknown>
-}
-
-/** Matches `GET /api/v1/api-keys` list item shape. */
-export type ApiKey = {
-  id: string
-  prefix: string
-  createdAt: string
-  lastUsedAt: string
-  revokedAt: string | null
-}
-
-export type AlertRule = {
-  id: string
-  name: string
-  query: string
-  condition: string
-  channels: Array<'slack' | 'webhook' | 'email'>
-  severity: LogImportance
-  enabled: boolean
-  lastTriggered: string | null
-}
-
-export type ErrorIssue = {
-  id: string
-  message: string
-  appName: string
-  environment: Environment
-  importance: LogImportance
-  count24h: number
-  trend: Array<number>
-  firstSeen: string
-  lastSeen: string
-}
-
-export type ActivityItem = {
-  id: string
-  kind: 'api-key' | 'alert' | 'deploy' | 'quota' | 'member'
-  text: string
-  detail?: string
-  time: string
 }

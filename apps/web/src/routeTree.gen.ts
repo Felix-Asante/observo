@@ -17,23 +17,10 @@ import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
 import { Route as appDashboardRouteRouteImport } from './routes/(app)/dashboard/route'
 import { Route as appDashboardIndexRouteImport } from './routes/(app)/dashboard/index'
-import { Route as appDashboardUsageRouteImport } from './routes/(app)/dashboard/usage'
-import { Route as appDashboardTracingRouteImport } from './routes/(app)/dashboard/tracing'
-import { Route as appDashboardTeamRouteImport } from './routes/(app)/dashboard/team'
 import { Route as appDashboardSdkRouteImport } from './routes/(app)/dashboard/sdk'
-import { Route as appDashboardPerformanceRouteImport } from './routes/(app)/dashboard/performance'
-import { Route as appDashboardMetricsRouteImport } from './routes/(app)/dashboard/metrics'
 import { Route as appDashboardLogsRouteImport } from './routes/(app)/dashboard/logs'
 import { Route as appDashboardLiveRouteImport } from './routes/(app)/dashboard/live'
-import { Route as appDashboardIntegrationsRouteImport } from './routes/(app)/dashboard/integrations'
-import { Route as appDashboardErrorsRouteImport } from './routes/(app)/dashboard/errors'
-import { Route as appDashboardAuditRouteImport } from './routes/(app)/dashboard/audit'
 import { Route as appDashboardApiKeysRouteImport } from './routes/(app)/dashboard/api-keys'
-import { Route as appDashboardAlertsRouteImport } from './routes/(app)/dashboard/alerts'
-import { Route as appDashboardSettingsRouteRouteImport } from './routes/(app)/dashboard/settings/route'
-import { Route as appDashboardSettingsIndexRouteImport } from './routes/(app)/dashboard/settings/index'
-import { Route as appDashboardSettingsSecurityRouteImport } from './routes/(app)/dashboard/settings/security'
-import { Route as appDashboardSettingsNotificationsRouteImport } from './routes/(app)/dashboard/settings/notifications'
 
 const authRouteRoute = authRouteRouteImport.update({
   id: '/(auth)',
@@ -73,34 +60,9 @@ const appDashboardIndexRoute = appDashboardIndexRouteImport.update({
   path: '/',
   getParentRoute: () => appDashboardRouteRoute,
 } as any)
-const appDashboardUsageRoute = appDashboardUsageRouteImport.update({
-  id: '/usage',
-  path: '/usage',
-  getParentRoute: () => appDashboardRouteRoute,
-} as any)
-const appDashboardTracingRoute = appDashboardTracingRouteImport.update({
-  id: '/tracing',
-  path: '/tracing',
-  getParentRoute: () => appDashboardRouteRoute,
-} as any)
-const appDashboardTeamRoute = appDashboardTeamRouteImport.update({
-  id: '/team',
-  path: '/team',
-  getParentRoute: () => appDashboardRouteRoute,
-} as any)
 const appDashboardSdkRoute = appDashboardSdkRouteImport.update({
   id: '/sdk',
   path: '/sdk',
-  getParentRoute: () => appDashboardRouteRoute,
-} as any)
-const appDashboardPerformanceRoute = appDashboardPerformanceRouteImport.update({
-  id: '/performance',
-  path: '/performance',
-  getParentRoute: () => appDashboardRouteRoute,
-} as any)
-const appDashboardMetricsRoute = appDashboardMetricsRouteImport.update({
-  id: '/metrics',
-  path: '/metrics',
   getParentRoute: () => appDashboardRouteRoute,
 } as any)
 const appDashboardLogsRoute = appDashboardLogsRouteImport.update({
@@ -113,56 +75,11 @@ const appDashboardLiveRoute = appDashboardLiveRouteImport.update({
   path: '/live',
   getParentRoute: () => appDashboardRouteRoute,
 } as any)
-const appDashboardIntegrationsRoute =
-  appDashboardIntegrationsRouteImport.update({
-    id: '/integrations',
-    path: '/integrations',
-    getParentRoute: () => appDashboardRouteRoute,
-  } as any)
-const appDashboardErrorsRoute = appDashboardErrorsRouteImport.update({
-  id: '/errors',
-  path: '/errors',
-  getParentRoute: () => appDashboardRouteRoute,
-} as any)
-const appDashboardAuditRoute = appDashboardAuditRouteImport.update({
-  id: '/audit',
-  path: '/audit',
-  getParentRoute: () => appDashboardRouteRoute,
-} as any)
 const appDashboardApiKeysRoute = appDashboardApiKeysRouteImport.update({
   id: '/api-keys',
   path: '/api-keys',
   getParentRoute: () => appDashboardRouteRoute,
 } as any)
-const appDashboardAlertsRoute = appDashboardAlertsRouteImport.update({
-  id: '/alerts',
-  path: '/alerts',
-  getParentRoute: () => appDashboardRouteRoute,
-} as any)
-const appDashboardSettingsRouteRoute =
-  appDashboardSettingsRouteRouteImport.update({
-    id: '/settings',
-    path: '/settings',
-    getParentRoute: () => appDashboardRouteRoute,
-  } as any)
-const appDashboardSettingsIndexRoute =
-  appDashboardSettingsIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => appDashboardSettingsRouteRoute,
-  } as any)
-const appDashboardSettingsSecurityRoute =
-  appDashboardSettingsSecurityRouteImport.update({
-    id: '/security',
-    path: '/security',
-    getParentRoute: () => appDashboardSettingsRouteRoute,
-  } as any)
-const appDashboardSettingsNotificationsRoute =
-  appDashboardSettingsNotificationsRouteImport.update({
-    id: '/notifications',
-    path: '/notifications',
-    getParentRoute: () => appDashboardSettingsRouteRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -170,47 +87,22 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof authForgotPasswordRoute
   '/sign-in': typeof authSignInRoute
   '/sign-up': typeof authSignUpRoute
-  '/dashboard/settings': typeof appDashboardSettingsRouteRouteWithChildren
-  '/dashboard/alerts': typeof appDashboardAlertsRoute
   '/dashboard/api-keys': typeof appDashboardApiKeysRoute
-  '/dashboard/audit': typeof appDashboardAuditRoute
-  '/dashboard/errors': typeof appDashboardErrorsRoute
-  '/dashboard/integrations': typeof appDashboardIntegrationsRoute
   '/dashboard/live': typeof appDashboardLiveRoute
   '/dashboard/logs': typeof appDashboardLogsRoute
-  '/dashboard/metrics': typeof appDashboardMetricsRoute
-  '/dashboard/performance': typeof appDashboardPerformanceRoute
   '/dashboard/sdk': typeof appDashboardSdkRoute
-  '/dashboard/team': typeof appDashboardTeamRoute
-  '/dashboard/tracing': typeof appDashboardTracingRoute
-  '/dashboard/usage': typeof appDashboardUsageRoute
   '/dashboard/': typeof appDashboardIndexRoute
-  '/dashboard/settings/notifications': typeof appDashboardSettingsNotificationsRoute
-  '/dashboard/settings/security': typeof appDashboardSettingsSecurityRoute
-  '/dashboard/settings/': typeof appDashboardSettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/forgot-password': typeof authForgotPasswordRoute
   '/sign-in': typeof authSignInRoute
   '/sign-up': typeof authSignUpRoute
-  '/dashboard/alerts': typeof appDashboardAlertsRoute
   '/dashboard/api-keys': typeof appDashboardApiKeysRoute
-  '/dashboard/audit': typeof appDashboardAuditRoute
-  '/dashboard/errors': typeof appDashboardErrorsRoute
-  '/dashboard/integrations': typeof appDashboardIntegrationsRoute
   '/dashboard/live': typeof appDashboardLiveRoute
   '/dashboard/logs': typeof appDashboardLogsRoute
-  '/dashboard/metrics': typeof appDashboardMetricsRoute
-  '/dashboard/performance': typeof appDashboardPerformanceRoute
   '/dashboard/sdk': typeof appDashboardSdkRoute
-  '/dashboard/team': typeof appDashboardTeamRoute
-  '/dashboard/tracing': typeof appDashboardTracingRoute
-  '/dashboard/usage': typeof appDashboardUsageRoute
   '/dashboard': typeof appDashboardIndexRoute
-  '/dashboard/settings/notifications': typeof appDashboardSettingsNotificationsRoute
-  '/dashboard/settings/security': typeof appDashboardSettingsSecurityRoute
-  '/dashboard/settings': typeof appDashboardSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -221,24 +113,11 @@ export interface FileRoutesById {
   '/(auth)/forgot-password': typeof authForgotPasswordRoute
   '/(auth)/sign-in': typeof authSignInRoute
   '/(auth)/sign-up': typeof authSignUpRoute
-  '/(app)/dashboard/settings': typeof appDashboardSettingsRouteRouteWithChildren
-  '/(app)/dashboard/alerts': typeof appDashboardAlertsRoute
   '/(app)/dashboard/api-keys': typeof appDashboardApiKeysRoute
-  '/(app)/dashboard/audit': typeof appDashboardAuditRoute
-  '/(app)/dashboard/errors': typeof appDashboardErrorsRoute
-  '/(app)/dashboard/integrations': typeof appDashboardIntegrationsRoute
   '/(app)/dashboard/live': typeof appDashboardLiveRoute
   '/(app)/dashboard/logs': typeof appDashboardLogsRoute
-  '/(app)/dashboard/metrics': typeof appDashboardMetricsRoute
-  '/(app)/dashboard/performance': typeof appDashboardPerformanceRoute
   '/(app)/dashboard/sdk': typeof appDashboardSdkRoute
-  '/(app)/dashboard/team': typeof appDashboardTeamRoute
-  '/(app)/dashboard/tracing': typeof appDashboardTracingRoute
-  '/(app)/dashboard/usage': typeof appDashboardUsageRoute
   '/(app)/dashboard/': typeof appDashboardIndexRoute
-  '/(app)/dashboard/settings/notifications': typeof appDashboardSettingsNotificationsRoute
-  '/(app)/dashboard/settings/security': typeof appDashboardSettingsSecurityRoute
-  '/(app)/dashboard/settings/': typeof appDashboardSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -248,47 +127,22 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/sign-in'
     | '/sign-up'
-    | '/dashboard/settings'
-    | '/dashboard/alerts'
     | '/dashboard/api-keys'
-    | '/dashboard/audit'
-    | '/dashboard/errors'
-    | '/dashboard/integrations'
     | '/dashboard/live'
     | '/dashboard/logs'
-    | '/dashboard/metrics'
-    | '/dashboard/performance'
     | '/dashboard/sdk'
-    | '/dashboard/team'
-    | '/dashboard/tracing'
-    | '/dashboard/usage'
     | '/dashboard/'
-    | '/dashboard/settings/notifications'
-    | '/dashboard/settings/security'
-    | '/dashboard/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/forgot-password'
     | '/sign-in'
     | '/sign-up'
-    | '/dashboard/alerts'
     | '/dashboard/api-keys'
-    | '/dashboard/audit'
-    | '/dashboard/errors'
-    | '/dashboard/integrations'
     | '/dashboard/live'
     | '/dashboard/logs'
-    | '/dashboard/metrics'
-    | '/dashboard/performance'
     | '/dashboard/sdk'
-    | '/dashboard/team'
-    | '/dashboard/tracing'
-    | '/dashboard/usage'
     | '/dashboard'
-    | '/dashboard/settings/notifications'
-    | '/dashboard/settings/security'
-    | '/dashboard/settings'
   id:
     | '__root__'
     | '/'
@@ -298,24 +152,11 @@ export interface FileRouteTypes {
     | '/(auth)/forgot-password'
     | '/(auth)/sign-in'
     | '/(auth)/sign-up'
-    | '/(app)/dashboard/settings'
-    | '/(app)/dashboard/alerts'
     | '/(app)/dashboard/api-keys'
-    | '/(app)/dashboard/audit'
-    | '/(app)/dashboard/errors'
-    | '/(app)/dashboard/integrations'
     | '/(app)/dashboard/live'
     | '/(app)/dashboard/logs'
-    | '/(app)/dashboard/metrics'
-    | '/(app)/dashboard/performance'
     | '/(app)/dashboard/sdk'
-    | '/(app)/dashboard/team'
-    | '/(app)/dashboard/tracing'
-    | '/(app)/dashboard/usage'
     | '/(app)/dashboard/'
-    | '/(app)/dashboard/settings/notifications'
-    | '/(app)/dashboard/settings/security'
-    | '/(app)/dashboard/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -382,46 +223,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appDashboardIndexRouteImport
       parentRoute: typeof appDashboardRouteRoute
     }
-    '/(app)/dashboard/usage': {
-      id: '/(app)/dashboard/usage'
-      path: '/usage'
-      fullPath: '/dashboard/usage'
-      preLoaderRoute: typeof appDashboardUsageRouteImport
-      parentRoute: typeof appDashboardRouteRoute
-    }
-    '/(app)/dashboard/tracing': {
-      id: '/(app)/dashboard/tracing'
-      path: '/tracing'
-      fullPath: '/dashboard/tracing'
-      preLoaderRoute: typeof appDashboardTracingRouteImport
-      parentRoute: typeof appDashboardRouteRoute
-    }
-    '/(app)/dashboard/team': {
-      id: '/(app)/dashboard/team'
-      path: '/team'
-      fullPath: '/dashboard/team'
-      preLoaderRoute: typeof appDashboardTeamRouteImport
-      parentRoute: typeof appDashboardRouteRoute
-    }
     '/(app)/dashboard/sdk': {
       id: '/(app)/dashboard/sdk'
       path: '/sdk'
       fullPath: '/dashboard/sdk'
       preLoaderRoute: typeof appDashboardSdkRouteImport
-      parentRoute: typeof appDashboardRouteRoute
-    }
-    '/(app)/dashboard/performance': {
-      id: '/(app)/dashboard/performance'
-      path: '/performance'
-      fullPath: '/dashboard/performance'
-      preLoaderRoute: typeof appDashboardPerformanceRouteImport
-      parentRoute: typeof appDashboardRouteRoute
-    }
-    '/(app)/dashboard/metrics': {
-      id: '/(app)/dashboard/metrics'
-      path: '/metrics'
-      fullPath: '/dashboard/metrics'
-      preLoaderRoute: typeof appDashboardMetricsRouteImport
       parentRoute: typeof appDashboardRouteRoute
     }
     '/(app)/dashboard/logs': {
@@ -438,27 +244,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appDashboardLiveRouteImport
       parentRoute: typeof appDashboardRouteRoute
     }
-    '/(app)/dashboard/integrations': {
-      id: '/(app)/dashboard/integrations'
-      path: '/integrations'
-      fullPath: '/dashboard/integrations'
-      preLoaderRoute: typeof appDashboardIntegrationsRouteImport
-      parentRoute: typeof appDashboardRouteRoute
-    }
-    '/(app)/dashboard/errors': {
-      id: '/(app)/dashboard/errors'
-      path: '/errors'
-      fullPath: '/dashboard/errors'
-      preLoaderRoute: typeof appDashboardErrorsRouteImport
-      parentRoute: typeof appDashboardRouteRoute
-    }
-    '/(app)/dashboard/audit': {
-      id: '/(app)/dashboard/audit'
-      path: '/audit'
-      fullPath: '/dashboard/audit'
-      preLoaderRoute: typeof appDashboardAuditRouteImport
-      parentRoute: typeof appDashboardRouteRoute
-    }
     '/(app)/dashboard/api-keys': {
       id: '/(app)/dashboard/api-keys'
       path: '/api-keys'
@@ -466,96 +251,22 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appDashboardApiKeysRouteImport
       parentRoute: typeof appDashboardRouteRoute
     }
-    '/(app)/dashboard/alerts': {
-      id: '/(app)/dashboard/alerts'
-      path: '/alerts'
-      fullPath: '/dashboard/alerts'
-      preLoaderRoute: typeof appDashboardAlertsRouteImport
-      parentRoute: typeof appDashboardRouteRoute
-    }
-    '/(app)/dashboard/settings': {
-      id: '/(app)/dashboard/settings'
-      path: '/settings'
-      fullPath: '/dashboard/settings'
-      preLoaderRoute: typeof appDashboardSettingsRouteRouteImport
-      parentRoute: typeof appDashboardRouteRoute
-    }
-    '/(app)/dashboard/settings/': {
-      id: '/(app)/dashboard/settings/'
-      path: '/'
-      fullPath: '/dashboard/settings/'
-      preLoaderRoute: typeof appDashboardSettingsIndexRouteImport
-      parentRoute: typeof appDashboardSettingsRouteRoute
-    }
-    '/(app)/dashboard/settings/security': {
-      id: '/(app)/dashboard/settings/security'
-      path: '/security'
-      fullPath: '/dashboard/settings/security'
-      preLoaderRoute: typeof appDashboardSettingsSecurityRouteImport
-      parentRoute: typeof appDashboardSettingsRouteRoute
-    }
-    '/(app)/dashboard/settings/notifications': {
-      id: '/(app)/dashboard/settings/notifications'
-      path: '/notifications'
-      fullPath: '/dashboard/settings/notifications'
-      preLoaderRoute: typeof appDashboardSettingsNotificationsRouteImport
-      parentRoute: typeof appDashboardSettingsRouteRoute
-    }
   }
 }
-
-interface appDashboardSettingsRouteRouteChildren {
-  appDashboardSettingsNotificationsRoute: typeof appDashboardSettingsNotificationsRoute
-  appDashboardSettingsSecurityRoute: typeof appDashboardSettingsSecurityRoute
-  appDashboardSettingsIndexRoute: typeof appDashboardSettingsIndexRoute
-}
-
-const appDashboardSettingsRouteRouteChildren: appDashboardSettingsRouteRouteChildren =
-  {
-    appDashboardSettingsNotificationsRoute:
-      appDashboardSettingsNotificationsRoute,
-    appDashboardSettingsSecurityRoute: appDashboardSettingsSecurityRoute,
-    appDashboardSettingsIndexRoute: appDashboardSettingsIndexRoute,
-  }
-
-const appDashboardSettingsRouteRouteWithChildren =
-  appDashboardSettingsRouteRoute._addFileChildren(
-    appDashboardSettingsRouteRouteChildren,
-  )
 
 interface appDashboardRouteRouteChildren {
-  appDashboardSettingsRouteRoute: typeof appDashboardSettingsRouteRouteWithChildren
-  appDashboardAlertsRoute: typeof appDashboardAlertsRoute
   appDashboardApiKeysRoute: typeof appDashboardApiKeysRoute
-  appDashboardAuditRoute: typeof appDashboardAuditRoute
-  appDashboardErrorsRoute: typeof appDashboardErrorsRoute
-  appDashboardIntegrationsRoute: typeof appDashboardIntegrationsRoute
   appDashboardLiveRoute: typeof appDashboardLiveRoute
   appDashboardLogsRoute: typeof appDashboardLogsRoute
-  appDashboardMetricsRoute: typeof appDashboardMetricsRoute
-  appDashboardPerformanceRoute: typeof appDashboardPerformanceRoute
   appDashboardSdkRoute: typeof appDashboardSdkRoute
-  appDashboardTeamRoute: typeof appDashboardTeamRoute
-  appDashboardTracingRoute: typeof appDashboardTracingRoute
-  appDashboardUsageRoute: typeof appDashboardUsageRoute
   appDashboardIndexRoute: typeof appDashboardIndexRoute
 }
 
 const appDashboardRouteRouteChildren: appDashboardRouteRouteChildren = {
-  appDashboardSettingsRouteRoute: appDashboardSettingsRouteRouteWithChildren,
-  appDashboardAlertsRoute: appDashboardAlertsRoute,
   appDashboardApiKeysRoute: appDashboardApiKeysRoute,
-  appDashboardAuditRoute: appDashboardAuditRoute,
-  appDashboardErrorsRoute: appDashboardErrorsRoute,
-  appDashboardIntegrationsRoute: appDashboardIntegrationsRoute,
   appDashboardLiveRoute: appDashboardLiveRoute,
   appDashboardLogsRoute: appDashboardLogsRoute,
-  appDashboardMetricsRoute: appDashboardMetricsRoute,
-  appDashboardPerformanceRoute: appDashboardPerformanceRoute,
   appDashboardSdkRoute: appDashboardSdkRoute,
-  appDashboardTeamRoute: appDashboardTeamRoute,
-  appDashboardTracingRoute: appDashboardTracingRoute,
-  appDashboardUsageRoute: appDashboardUsageRoute,
   appDashboardIndexRoute: appDashboardIndexRoute,
 }
 
