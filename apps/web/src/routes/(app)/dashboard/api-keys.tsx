@@ -10,6 +10,7 @@ import { CreateKeyDialog } from '#/components/dashboard/api-keys/create-key-dial
 import { PageHeader } from '#/components/dashboard/shared/page-header'
 import { MAX_API_KEYS } from '#/data/dashboard/api-keys'
 import { getApiKeys } from '#/functions/api-keys'
+import { getApiKeysQueryOptions } from '#/lib/tanstack-query/query-options/api-keys'
 
 export const Route = createFileRoute('/(app)/dashboard/api-keys')({
   head: () => ({ meta: [{ title: 'API keys · Observo' }] }),
@@ -26,11 +27,7 @@ function ApiKeysPage() {
     isError,
     isFetching,
     refetch,
-  } = useQuery({
-    queryKey: ['api-keys'],
-    queryFn: getApiKeys,
-    placeholderData: (previous) => previous,
-  })
+  } = useQuery(getApiKeysQueryOptions())
 
   const keys = apiKeys ?? []
   const activeCount = keys.filter((key) => key.revokedAt === null).length
