@@ -10,11 +10,19 @@ export type DialogProps = {
   onClose: () => void;
   /** Accessible name for the dialog. */
   label: string;
+  dismissible?: boolean;
   className?: string;
   children: ReactNode;
 };
 
-export function Dialog({ open, onClose, label, className, children }: DialogProps) {
+export function Dialog({
+  open,
+  onClose,
+  label,
+  dismissible = true,
+  className,
+  children,
+}: DialogProps) {
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -25,7 +33,7 @@ export function Dialog({ open, onClose, label, className, children }: DialogProp
     document.body.style.overflow = "hidden";
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
+      if (event.key === "Escape" && dismissible) onClose();
     };
     document.addEventListener("keydown", onKeyDown);
 
@@ -34,7 +42,7 @@ export function Dialog({ open, onClose, label, className, children }: DialogProp
       document.body.style.overflow = "";
       previouslyFocused?.focus();
     };
-  }, [open, onClose]);
+  }, [open, onClose, dismissible]);
 
   if (!open) return null;
 
@@ -42,7 +50,7 @@ export function Dialog({ open, onClose, label, className, children }: DialogProp
     <div className="fixed inset-0 z-100 flex items-end justify-center p-4 sm:items-center">
       <div
         aria-hidden
-        onClick={onClose}
+        onClick={dismissible ? onClose : undefined}
         className="animate-fade-in absolute inset-0 bg-ink-950/70 backdrop-blur-sm"
       />
       <div
@@ -72,9 +80,13 @@ export function DialogHeader({
 }) {
   return (
     <div className="border-b border-border-subtle px-6 py-5">
-      <h2 className="text-base font-medium tracking-tight text-ink-50">{title}</h2>
+      <h2 className="text-base font-medium tracking-tight text-ink-50">
+        {title}
+      </h2>
       {description ? (
-        <p className="mt-1 text-sm leading-relaxed text-ink-400">{description}</p>
+        <p className="mt-1 text-sm leading-relaxed text-ink-400">
+          {description}
+        </p>
       ) : null}
     </div>
   );

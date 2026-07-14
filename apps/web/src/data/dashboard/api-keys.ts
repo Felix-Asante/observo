@@ -40,7 +40,3 @@ export const apiKeys: Array<ApiKey> = [
 ]
 
 export const MAX_API_KEYS = 10
-
-/** Example of the one-time plaintext key format returned on create. */
-export const exampleGeneratedKey =
-  'OBV:a3f81c20d94e11f0:u8Kq2wRzXcVbNm4LpJh6TgYdSeAf1QoW'

@@ -12,8 +12,6 @@ import { LRUCache } from 'lru-cache';
 import {
   API_VERSION,
   APP_PREFIX,
-  LAST_USED_DEBOUNCE_SEC,
-  LAST_USED_HASH,
   LRU_SOFT_TTL_MS,
   REDIS_HARD_TTL_MS,
 } from '~/configs';
@@ -22,6 +20,7 @@ import { DB_PROVIDER } from '~/database/database-provider';
 import type { DBClient } from '~/database/db';
 import { REDIS_CLIENT } from '~/infra/redis.module';
 import { ApiKey } from '~/modules/api-key/api-key.schema';
+import { ApiKeyService } from '~/modules/api-key/api-key.service';
 import { digest, extractApiKey } from '~/utils/api-key';
 
 const localCache = new LRUCache<string, CachedApiKey>({ max: 100_000 });
@@ -33,12 +32,12 @@ export class SDKAuthGuard implements CanActivate {
   constructor(
     @Inject(REDIS_CLIENT) private readonly redis: Redis,
     @Inject(DB_PROVIDER) private readonly db: DBClient,
+    private readonly apiKeyService: ApiKeyService,
   ) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<RequestWithUser>();
     const apiKey = request.headers['x-api-key'] as string | undefined;
-
-    console.log('SDKAuthGuard apiKey', apiKey);
 
     if (!apiKey) throw new UnauthorizedException('Unauthorized');
 
@@ -52,30 +51,23 @@ export class SDKAuthGuard implements CanActivate {
     try {
       const c = localCache.get(lrukey);
       if (c && c.apiKeyDigest === digestedApiKey && c.expiresAt > now) {
-        console.log('API key is in local cache');
         request.user = {
           id: c.userId,
           keyId,
         };
 
-        void this.trackApiKeyLastUsed(keyId);
+        await this.apiKeyService.touchLastUsed(keyId);
         return true;
       }
 
-      // check redis if api key is not in local cache
       const rKeyDigest = `${APP_PREFIX}:api_key:${API_VERSION}:${keyId}`;
       const rDigest = await this.redis.hgetall(rKeyDigest);
 
       if (rDigest?.invalid === '1') {
-        console.log('SDKAuthGuard rDigest.invalid === 1', rDigest);
         throw new UnauthorizedException('Unauthorized');
       }
 
       if (rDigest?.apiKeyDigest && rDigest?.apiKeyDigest !== digestedApiKey) {
-        console.log(
-          'SDKAuthGuard rDigest.apiKeyDigest !== digestedApiKey',
-          rDigest,
-        );
         throw new UnauthorizedException('Unauthorized');
       }
 
@@ -91,13 +83,10 @@ export class SDKAuthGuard implements CanActivate {
           keyId,
         };
 
-        console.log('API key is in redis');
-
-        void this.trackApiKeyLastUsed(keyId);
+        await this.apiKeyService.touchLastUsed(keyId);
         return true;
       }
 
-      // if api key is not in cache, check from db
       const [apiKeyRecord] = await this.db
         .select({
           key: ApiKey.key,
@@ -115,7 +104,6 @@ export class SDKAuthGuard implements CanActivate {
           invalid: '1',
         });
         await this.redis.expire(rKeyDigest, REDIS_HARD_TTL_MS);
-        console.log('SDKAuthGuard isValid === false', isValid);
         throw new UnauthorizedException('Unauthorized');
       }
 
@@ -126,32 +114,22 @@ export class SDKAuthGuard implements CanActivate {
 
       await this.redis.expire(rKeyDigest, REDIS_HARD_TTL_MS);
 
+      localCache.set(lrukey, {
+        userId: apiKeyRecord.userId,
+        apiKeyDigest: digestedApiKey,
+        expiresAt: now + LRU_SOFT_TTL_MS,
+      });
+
       request.user = {
         id: apiKeyRecord.userId,
         keyId,
       };
 
-      void this.trackApiKeyLastUsed(keyId);
+      await this.apiKeyService.touchLastUsed(keyId);
       return true;
     } catch (error) {
-      console.error('SDKAuthGuard error', error);
+      if (error instanceof UnauthorizedException) throw error;
       throw new UnauthorizedException('Unauthorized');
     }
-  }
-
-  private async trackApiKeyLastUsed(keyId: string) {
-    const lockKey = `${APP_PREFIX}:api_key:last_used:${API_VERSION}:${keyId}`;
-
-    const ok = await this.redis.set(
-      lockKey,
-      '1',
-      'EX',
-      LAST_USED_DEBOUNCE_SEC,
-      'NX',
-    );
-
-    if (!ok) return;
-
-    await this.redis.hset(LAST_USED_HASH, keyId, Date.now().toString());
   }
 }

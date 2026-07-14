@@ -47,12 +47,16 @@ type ApiKeysTableProps = {
   apiKeys: Array<ApiKey>
   loading?: boolean
   onCreateKey?: () => void
+  onRegenerateKey?: (apiKey: ApiKey) => void
+  onRevokeKey?: (apiKey: ApiKey) => void
 }
 
 export function ApiKeysTable({
   apiKeys,
   loading = false,
   onCreateKey,
+  onRegenerateKey,
+  onRevokeKey,
 }: ApiKeysTableProps) {
   if (loading) {
     return <TableLoader columns={API_KEY_COLUMNS} label="Loading API keys" />
@@ -107,7 +111,15 @@ export function ApiKeysTable({
                 <Td className="hidden font-mono text-xs whitespace-nowrap text-ink-400 lg:table-cell">
                   {revoked ? '—' : (apiKey.lastUsedAt ?? '—')}
                 </Td>
-                <Td>{revoked ? null : <KeyActions apiKey={apiKey} />}</Td>
+                <Td>
+                  {revoked || !onRegenerateKey || !onRevokeKey ? null : (
+                    <KeyActions
+                      apiKey={apiKey}
+                      onRegenerate={onRegenerateKey}
+                      onRevoke={onRevokeKey}
+                    />
+                  )}
+                </Td>
               </Tr>
             )
           })}

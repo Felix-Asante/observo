@@ -7,10 +7,12 @@ import { getErrorMessage } from '@observo/utils'
 
 import { ApiKeysTable } from '#/components/dashboard/api-keys/api-keys-table'
 import { CreateKeyDialog } from '#/components/dashboard/api-keys/create-key-dialog'
+import { RegenerateKeyDialog } from '#/components/dashboard/api-keys/regenerate-key-dialog'
+import { RevokeKeyDialog } from '#/components/dashboard/api-keys/revoke-key-dialog'
 import { PageHeader } from '#/components/dashboard/shared/page-header'
 import { MAX_API_KEYS } from '#/data/dashboard/api-keys'
-import { getApiKeys } from '#/functions/api-keys'
 import { getApiKeysQueryOptions } from '#/lib/tanstack-query/query-options/api-keys'
+import type { ApiKey } from '#/types/api-keys'
 
 export const Route = createFileRoute('/(app)/dashboard/api-keys')({
   head: () => ({ meta: [{ title: 'API keys · Observo' }] }),
@@ -19,6 +21,8 @@ export const Route = createFileRoute('/(app)/dashboard/api-keys')({
 
 function ApiKeysPage() {
   const [createOpen, setCreateOpen] = useState(false)
+  const [regenerateKey, setRegenerateKey] = useState<ApiKey | null>(null)
+  const [revokeKey, setRevokeKey] = useState<ApiKey | null>(null)
 
   const {
     data: apiKeys,
@@ -122,10 +126,28 @@ function ApiKeysPage() {
           apiKeys={keys}
           loading={showSkeleton}
           onCreateKey={() => setCreateOpen(true)}
+          onRegenerateKey={setRegenerateKey}
+          onRevokeKey={setRevokeKey}
         />
       </div>
 
-      <CreateKeyDialog open={createOpen} onClose={() => setCreateOpen(false)} />
+      {createOpen ? (
+        <CreateKeyDialog open onClose={() => setCreateOpen(false)} />
+      ) : null}
+      {regenerateKey ? (
+        <RegenerateKeyDialog
+          apiKey={regenerateKey}
+          open
+          onClose={() => setRegenerateKey(null)}
+        />
+      ) : null}
+      {revokeKey ? (
+        <RevokeKeyDialog
+          apiKey={revokeKey}
+          open
+          onClose={() => setRevokeKey(null)}
+        />
+      ) : null}
     </>
   )
 }

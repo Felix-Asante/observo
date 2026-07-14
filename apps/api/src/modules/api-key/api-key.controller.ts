@@ -3,6 +3,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -23,7 +24,7 @@ export class ApiKeyController {
     return this.apiKeyService.createApiKey(session.user.id);
   }
 
-  @Post(':keyId/regenerate')
+  @Patch(':keyId/regenerate')
   async regenerateApiKey(
     @Param('keyId') keyId: string,
     @Session() session: UserSession,

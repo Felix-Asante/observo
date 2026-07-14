@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { cn } from "../lib/cn";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
@@ -17,6 +18,12 @@ export type DropdownProps = {
   children: ReactNode;
 };
 
+type MenuCoords = {
+  top: number;
+  left: number;
+  transformOrigin: string;
+};
+
 export function Dropdown({
   button,
   buttonClassName,
@@ -26,13 +33,80 @@ export function Dropdown({
   children,
 }: DropdownProps) {
   const [open, setOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [coords, setCoords] = useState<MenuCoords | null>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    if (!open) {
+      setCoords(null);
+      return;
+    }
+
+    const updatePosition = () => {
+      const trigger = triggerRef.current;
+      const menu = menuRef.current;
+      if (!trigger || !menu) return;
+
+      const rect = trigger.getBoundingClientRect();
+      const menuRect = menu.getBoundingClientRect();
+      const gap = 8;
+      const padding = 8;
+
+      const spaceBelow = window.innerHeight - rect.bottom - gap;
+      const spaceAbove = rect.top - gap;
+      const openUp =
+        spaceBelow < menuRect.height && spaceAbove > spaceBelow;
+
+      let top = openUp
+        ? rect.top - menuRect.height - gap
+        : rect.bottom + gap;
+
+      let left =
+        align === "end" ? rect.right - menuRect.width : rect.left;
+
+      left = Math.min(
+        Math.max(padding, left),
+        window.innerWidth - menuRect.width - padding,
+      );
+      top = Math.min(
+        Math.max(padding, top),
+        window.innerHeight - menuRect.height - padding,
+      );
+
+      const horizontal = align === "end" ? "right" : "left";
+      setCoords({
+        top,
+        left,
+        transformOrigin: openUp
+          ? `bottom ${horizontal}`
+          : `top ${horizontal}`,
+      });
+    };
+
+    updatePosition();
+
+    window.addEventListener("resize", updatePosition);
+    // Capture scroll from nested overflow containers too.
+    window.addEventListener("scroll", updatePosition, true);
+    return () => {
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+    };
+  }, [open, align]);
 
   useEffect(() => {
     if (!open) return;
 
     const onPointerDown = (event: MouseEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) setOpen(false);
+      const target = event.target as Node;
+      if (
+        triggerRef.current?.contains(target) ||
+        menuRef.current?.contains(target)
+      ) {
+        return;
+      }
+      setOpen(false);
     };
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") setOpen(false);
@@ -47,8 +121,9 @@ export function Dropdown({
   }, [open]);
 
   return (
-    <div ref={containerRef} className="relative">
+    <>
       <button
+        ref={triggerRef}
         type="button"
         aria-haspopup="menu"
         aria-expanded={open}
@@ -58,20 +133,32 @@ export function Dropdown({
       >
         {button}
       </button>
-      {open ? (
-        <div
-          role="menu"
-          onClick={() => setOpen(false)}
-          className={cn(
-            "surface-panel animate-scale-in absolute top-full z-50 mt-2 min-w-52 rounded-lg p-1.5",
-            align === "end" ? "right-0" : "left-0",
-            menuClassName,
-          )}
-        >
-          {children}
-        </div>
-      ) : null}
-    </div>
+      {open
+        ? createPortal(
+            <div
+              ref={menuRef}
+              role="menu"
+              onClick={() => setOpen(false)}
+              style={
+                coords
+                  ? {
+                      top: coords.top,
+                      left: coords.left,
+                      transformOrigin: coords.transformOrigin,
+                    }
+                  : { visibility: "hidden", top: 0, left: 0 }
+              }
+              className={cn(
+                "surface-panel animate-scale-in fixed z-50 min-w-52 rounded-lg p-1.5",
+                menuClassName,
+              )}
+            >
+              {children}
+            </div>,
+            document.body,
+          )
+        : null}
+    </>
   );
 }
 
@@ -79,7 +166,11 @@ export type DropdownItemProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   danger?: boolean;
 };
 
-export function DropdownItem({ className, danger, ...props }: DropdownItemProps) {
+export function DropdownItem({
+  className,
+  danger,
+  ...props
+}: DropdownItemProps) {
   return (
     <button
       type="button"

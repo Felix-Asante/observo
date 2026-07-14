@@ -3,28 +3,36 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button, Dialog, DialogFooter, DialogHeader } from '@observo/ui'
 
 import { SecretKeyReveal } from '#/components/dashboard/api-keys/secret-key-reveal'
-import { createApiKey } from '#/functions/api-keys'
+import { regenerateApiKey } from '#/functions/api-keys'
 import { queryKeys } from '#/lib/tanstack-query/query-keys'
 import { toast } from '#/lib/toast'
+import type { ApiKey } from '#/types/api-keys'
 
-type CreateKeyDialogProps = {
+type RegenerateKeyDialogProps = {
+  apiKey: ApiKey
   open: boolean
   onClose: () => void
 }
 
 type Step = 'confirm' | 'reveal'
 
-export function CreateKeyDialog({ open, onClose }: CreateKeyDialogProps) {
+export function RegenerateKeyDialog({
+  apiKey,
+  open,
+  onClose,
+}: RegenerateKeyDialogProps) {
   const queryClient = useQueryClient()
   const [step, setStep] = useState<Step>('confirm')
   const [secretKey, setSecretKey] = useState<string | null>(null)
 
-  const create = useMutation({
-    mutationFn: () => createApiKey(),
+  const regenerate = useMutation({
+    mutationFn: () => regenerateApiKey({ data: { keyId: apiKey.id } }),
     onSuccess: (data) => {
       if (!data.key) {
-        toast.error('Created, but the new key was missing from the response')
-        void queryClient.invalidateQueries({
+        toast.error(
+          'Regenerated, but the new key was missing from the response',
+        )
+        queryClient.invalidateQueries({
           queryKey: queryKeys.apiKeys.all(),
         })
         onClose()
@@ -33,10 +41,10 @@ export function CreateKeyDialog({ open, onClose }: CreateKeyDialogProps) {
       setSecretKey(data.key)
       setStep('reveal')
     },
-    onError: (error) => toast.fromError(error, 'Failed to create API key'),
+    onError: (error) => toast.fromError(error, 'Failed to regenerate API key'),
   })
 
-  const locked = create.isPending || step === 'reveal'
+  const locked = regenerate.isPending || step === 'reveal'
 
   const close = () => {
     if (locked) return
@@ -53,48 +61,35 @@ export function CreateKeyDialog({ open, onClose }: CreateKeyDialogProps) {
       open={open}
       onClose={close}
       dismissible={!locked}
-      label="Create API key"
+      label="Regenerate API key"
       className="max-w-lg"
     >
       {step === 'confirm' ? (
         <>
           <DialogHeader
-            title="Create API key"
-            description="Keys authenticate the SDK against the ingest API. You can hold up to 10 active keys."
+            title="Regenerate this key?"
+            description="A new secret is issued and the current one stops working immediately. Update your deployments right after you copy the new key."
           />
-          <div className="px-6 py-5">
-            <div className="surface-inset rounded-lg px-4 py-3.5 font-mono text-xs leading-6 text-ink-400">
-              <p>
-                <span className="text-ink-600"># format</span>
-              </p>
-              <p className="text-ink-200">
-                OBV:<span className="text-iris-300">{'<key-id>'}</span>:
-                <span className="text-iris-300">{'<secret>'}</span>
-              </p>
-              <p className="mt-2">
-                <span className="text-ink-600"># usage</span>
-              </p>
-              <p className="text-ink-200">
-                x-api-key: OBV:4fa2c81b…{' '}
-                <span className="text-ink-600">→ POST /api/v1/logs/send</span>
-              </p>
-            </div>
+          <div className="px-6 py-4">
+            <code className="font-mono text-xs text-ink-400">
+              {apiKey.prefix}
+            </code>
           </div>
           <DialogFooter>
             <Button
               variant="ghost"
               size="sm"
               onClick={close}
-              disabled={create.isPending}
+              disabled={regenerate.isPending}
             >
               Cancel
             </Button>
             <Button
               size="sm"
-              loading={create.isPending}
-              onClick={() => create.mutate()}
+              loading={regenerate.isPending}
+              onClick={() => regenerate.mutate()}
             >
-              Generate key
+              Regenerate
             </Button>
           </DialogFooter>
         </>
@@ -102,9 +97,14 @@ export function CreateKeyDialog({ open, onClose }: CreateKeyDialogProps) {
         <>
           <DialogHeader
             title="Your new API key"
-            description="Copy it now — for security, the full key is shown only once. This dialog stays open until you confirm."
+            description="The previous secret is revoked. Copy the new key now — it's shown only once. This dialog stays open until you confirm."
           />
-          {secretKey ? <SecretKeyReveal secretKey={secretKey} /> : null}
+          {secretKey ? (
+            <SecretKeyReveal
+              secretKey={secretKey}
+              warning="The old key no longer works. Replace it in every environment (SDK config, CI secrets, etc.) before closing this dialog. Anyone with the new key can write logs to your workspace."
+            />
+          ) : null}
           <DialogFooter>
             <Button size="sm" onClick={finish}>
               I've copied the key
