@@ -3,7 +3,7 @@ import type { Response as ExpressResponse } from 'express';
 import { publishLogBatch } from 'src/nats/producer';
 import { clickhouseClient } from '~/clickhouse/client';
 import { LOGS_EVENTS_TABLE } from '~/clickhouse/schema';
-import { addClient } from '~/sse/sse-registry';
+import { addClient, removeClient } from '~/sse/sse-registry';
 import type { AddLogsDto } from '~/modules/logs/dto/add-log.dto';
 import type { StreamLogsQueryDto } from '~/modules/logs/dto/stream-logs-query.dto';
 import { MAX_LIMIT } from '~/configs';
@@ -41,50 +41,86 @@ export class LogsService {
     query: StreamLogsQueryDto,
     res: ExpressResponse,
   ) {
-    const limit = query.limit ?? 100;
+    const limit = Math.min(Math.max(query.limit ?? 100, 1), MAX_LIMIT);
     const { type, env, appName, search } = query;
 
     res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Cache-Control', 'no-cache, no-transform');
     res.setHeader('Connection', 'keep-alive');
-    res.flushHeaders(); // flush headers to send data immediately
+    res.setHeader('X-Accel-Buffering', 'no'); // disable reverse-proxy buffering: essential for SSE
+    res.flushHeaders(); // flush headers to send data immediately to the client
 
-    const conditions = [`userId = {userId:String}`];
+    const whereClauses = [`userId = {userId:String}`];
+    const queryParams: Record<string, string | number> = { userId, limit };
+
     if (type) {
-      conditions.push(`type = {type:String}`);
+      whereClauses.push(`type = {type:String}`);
+      queryParams.type = type;
     }
     if (appName) {
-      conditions.push(`appName = {appName:String}`);
+      whereClauses.push(`appName = {appName:String}`);
+      queryParams.appName = appName;
     }
     if (search) {
-      conditions.push(`message LIKE {search:String}`);
+      whereClauses.push(`message LIKE {search:String}`);
+      queryParams.search = `%${search}%`;
     }
-
     if (env) {
-      conditions.push(`environment = {environment:String}`);
+      whereClauses.push(`environment = {environment:String}`);
+      queryParams.environment = env;
     }
 
-    const sql = `SELECT * FROM ${LOGS_EVENTS_TABLE} WHERE ${conditions.join(' AND ')} ORDER BY timestamp DESC LIMIT {limit:UInt32}`;
+    const sql = `SELECT * FROM ${LOGS_EVENTS_TABLE} WHERE ${whereClauses.join(' AND ')} ORDER BY timestamp DESC LIMIT {limit:UInt32}`;
 
-    const logs = await clickhouseClient.query({
-      query: sql,
-      format: 'JSONEachRow',
-      query_params: { limit, userId, type, appName, search, env },
-    });
+    try {
+      const result = await clickhouseClient.query({
+        query: sql,
+        format: 'JSONEachRow',
+        query_params: queryParams,
+      });
+      const initialRows = await result.json();
+      res.write(
+        `data: ${JSON.stringify({ type: 'initial', logs: initialRows })}\n\n`,
+      );
+    } catch (error) {
+      res.write(
+        `data: ${JSON.stringify({ type: 'error', message: 'Failed to load initial logs' })}\n\n`,
+      );
+      console.error('SSE initial logs query failed', error);
+    }
 
-    const intialRows = await logs.json();
-
-    res.write(
-      `data: ${JSON.stringify({ type: 'initial', logs: intialRows.toReversed() })}\n\n`,
-    );
-
-    const clientFilters = { userId, type, appName, search, env, limit };
+    const clientFilters = {
+      userId,
+      type,
+      appName,
+      search,
+      env,
+      limit,
+    };
 
     addClient(res, clientFilters);
 
-    res.on('close', () => {
-      res.send();
-    });
+    const heartbeat = setInterval(() => {
+      if (res.writableEnded || res.destroyed) {
+        clearInterval(heartbeat);
+        removeClient(res);
+        return;
+      }
+      try {
+        res.write(`: ping\n\n`);
+      } catch {
+        clearInterval(heartbeat);
+        removeClient(res);
+      }
+    }, 15_000);
+
+    const cleanup = () => {
+      clearInterval(heartbeat);
+      removeClient(res);
+    };
+
+    res.on('close', cleanup);
+    res.on('error', cleanup);
   }
 
   private buildCacheKey(userId: string, query: StreamLogsQueryDto) {

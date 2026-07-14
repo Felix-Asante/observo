@@ -30,12 +30,13 @@ export class LogsController {
   }
 
   @Get('stream')
+  @UseGuards(AuthGuard)
   async startSSE(
     @Query() query: StreamLogsQueryDto,
-    @Req() req: RequestWithUser,
+    @Session() session: UserSession,
     @Res() res: ExpressResponse,
   ) {
-    return this.logsService.startSSE(req.user.id, query, res);
+    return this.logsService.startSSE(session.user.id, query, res);
   }
 
   @Get()

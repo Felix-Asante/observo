@@ -9,5 +9,6 @@ export const API_ENDPOINTS = {
   },
   logs: {
     root: () => `/logs`,
+    stream: () => `/logs/stream`,
   },
 }
