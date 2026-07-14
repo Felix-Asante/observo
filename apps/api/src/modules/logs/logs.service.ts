@@ -185,21 +185,36 @@ export class LogsService {
     }
 
     const whereClauses = [`userId = {userId:String}`];
+    const queryParams: Record<string, string | number> = {
+      userId,
+      limit,
+    };
+
     if (type) {
       whereClauses.push(`type = {type:String}`);
+      queryParams.type = type as string;
     }
     if (appName) {
       whereClauses.push(`appName = {appName:String}`);
+      queryParams.appName = appName as string;
     }
     if (search) {
       whereClauses.push(`message LIKE {search:String}`);
+      queryParams.search = `%${search}%`;
     }
     if (env) {
       whereClauses.push(`environment = {environment:String}`);
+      queryParams.environment = env as string;
     }
 
-    if (timeStampFrom) whereClauses.push(`timestamp >= {timeStampFrom:UInt32}`);
-    if (timeStampTo) whereClauses.push(`timestamp <= {timeStampTo:UInt32}`);
+    if (timeStampFrom) {
+      whereClauses.push(`timestamp >= {timeStampFrom:UInt32}`);
+      queryParams.timeStampFrom = timeStampFrom;
+    }
+    if (timeStampTo) {
+      whereClauses.push(`timestamp <= {timeStampTo:UInt32}`);
+      queryParams.timeStampTo = timeStampTo;
+    }
 
     const sql = `SELECT * FROM ${LOGS_EVENTS_TABLE} WHERE ${whereClauses.join(' AND ')} ORDER BY timestamp DESC LIMIT {limit:UInt32}`;
 
@@ -211,7 +226,7 @@ export class LogsService {
     where24h.push(`timestamp >= {from24hSec:UInt32}`);
     where24h.push(`timestamp <= {to24hSec:UInt32}`);
 
-    const queryCount = `SELECT COUNT(*) FROM ${LOGS_EVENTS_TABLE} WHERE ${where24h.join(' AND ')}`;
+    const queryCount = `SELECT COUNT(*) AS total FROM ${LOGS_EVENTS_TABLE} WHERE ${where24h.join(' AND ')}`;
     const count24hPromise = clickhouseClient.query({
       query: queryCount,
       format: 'JSONEachRow',
@@ -221,7 +236,7 @@ export class LogsService {
     const logsPromise = clickhouseClient.query({
       query: sql,
       format: 'JSONEachRow',
-      query_params: { limit, ...query },
+      query_params: queryParams,
     });
 
     const [count24hResult, logsResult] = await Promise.all([
@@ -230,10 +245,10 @@ export class LogsService {
     ]);
 
     const logs = await logsResult.json();
-    const [{ total: count24hTotal }] =
-      (await count24hResult.json()) as unknown as {
-        total: string;
-      }[];
+    const countRows = (await count24hResult.json()) as unknown as {
+      total: string;
+    }[];
+    const count24hTotal = Number(countRows[0]?.total ?? 0);
 
     resultCache.set(cacheKey, {
       rows: logs,
