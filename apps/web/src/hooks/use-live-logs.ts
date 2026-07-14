@@ -3,7 +3,7 @@ import { toQueryString } from '@observo/utils'
 
 import { API_ENDPOINTS } from '#/constants/api-endpoint'
 import { getApiBaseUrl } from '#/lib/api-url'
-import { mapApiLogsToEvents } from '#/lib/logs/map-api-log'
+import { mapApiLogsToEvents } from '#/utils/logs/map-api-log'
 import type { LogEvent } from '#/data/dashboard/types'
 import type { ApiLog, GetLogsParams } from '#/types/logs'
 

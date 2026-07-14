@@ -11,4 +11,7 @@ export const API_ENDPOINTS = {
     root: () => `/logs`,
     stream: () => `/logs/stream`,
   },
+  overview: {
+    root: () => `/overview`,
+  },
 }

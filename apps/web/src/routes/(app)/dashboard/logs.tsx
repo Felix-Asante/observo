@@ -11,7 +11,7 @@ import { LogDrawer } from '#/components/dashboard/logs/log-drawer'
 import { LogsTable } from '#/components/dashboard/logs/logs-table'
 import { PageHeader } from '#/components/dashboard/shared/page-header'
 import type { LogEvent, LogLevel } from '#/data/dashboard/types'
-import { mapApiLogsToEvents } from '#/lib/logs/map-api-log'
+import { mapApiLogsToEvents } from '#/utils/logs/map-api-log'
 import {
   DEFAULT_LOGS_LIMIT,
   getLogsQueryOptions,

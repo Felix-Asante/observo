@@ -11,6 +11,7 @@ import { AuthModule } from '@thallesp/nestjs-better-auth';
 import { auth } from '~/infra/auth';
 import { LogsModule } from './modules/logs/logs.module';
 import { UsersModule } from './modules/users/users.module';
+import { OverviewModule } from './modules/overview/overview.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { UsersModule } from './modules/users/users.module';
     CacheModule,
     LogsModule,
     UsersModule,
+    OverviewModule,
   ],
   controllers: [AppController],
   providers: [AppService],

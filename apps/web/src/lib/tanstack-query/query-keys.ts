@@ -8,4 +8,7 @@ export const queryKeys = {
   logs: {
     all: (q: Query) => ['logs', toQueryString(q)],
   },
+  overview: {
+    all: () => ['overview'],
+  },
 }
