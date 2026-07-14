@@ -29,9 +29,9 @@ export function Sidebar({ collapsed, onToggle, onNavigate }: SidebarProps) {
       </div>
 
       {/* Workspace */}
-      <div className={cn('px-3 pt-3', collapsed && 'px-2')}>
+      {/* <div className={cn('px-3 pt-3', collapsed && 'px-2')}>
         <WorkspaceSwitcher collapsed={collapsed} />
-      </div>
+      </div> */}
 
       {/* Navigation */}
       <nav

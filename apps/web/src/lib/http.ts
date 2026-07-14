@@ -37,3 +37,4 @@ export async function createServerHttpClient() {
     withCredentials: true,
   })
 }
+

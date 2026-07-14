@@ -12,7 +12,7 @@ export const Route = createFileRoute('/(app)')({
   },
   pendingMs: 0,
   pendingMinMs: 0,
-  pendingComponent: AppGroupPending,
+  // pendingComponent: AppGroupPending,
   component: AppGroupLayout,
 })
 

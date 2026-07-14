@@ -37,30 +37,30 @@ export const navSections: Array<NavSection> = [
       { label: 'Overview', to: '/dashboard', icon: Activity, exact: true },
       { label: 'Logs', to: '/dashboard/logs', icon: ScrollText },
       { label: 'Live tail', to: '/dashboard/live', icon: Radio },
-      { label: 'Errors', to: '/dashboard/errors', icon: Bug },
-      { label: 'Performance', to: '/dashboard/performance', icon: Gauge },
-      { label: 'Tracing', to: '/dashboard/tracing', icon: GitBranch },
-      { label: 'Metrics', to: '/dashboard/metrics', icon: BarChart3 },
+      // { label: 'Errors', to: '/dashboard/errors', icon: Bug },
+      // { label: 'Performance', to: '/dashboard/performance', icon: Gauge },
+      // { label: 'Tracing', to: '/dashboard/tracing', icon: GitBranch },
+      // { label: 'Metrics', to: '/dashboard/metrics', icon: BarChart3 },
     ],
   },
   {
     label: 'Configure',
     items: [
-      { label: 'Alerts', to: '/dashboard/alerts', icon: AlertTriangle },
+      // { label: 'Alerts', to: '/dashboard/alerts', icon: AlertTriangle },
       { label: 'API keys', to: '/dashboard/api-keys', icon: KeyRound },
       { label: 'SDK setup', to: '/dashboard/sdk', icon: BookOpen },
-      { label: 'Integrations', to: '/dashboard/integrations', icon: Plug },
+      // { label: 'Integrations', to: '/dashboard/integrations', icon: Plug },
     ],
   },
-  {
-    label: 'Workspace',
-    items: [
-      { label: 'Team', to: '/dashboard/team', icon: Users },
-      { label: 'Usage & billing', to: '/dashboard/usage', icon: Zap },
-      { label: 'Audit log', to: '/dashboard/audit', icon: Shield },
-      { label: 'Settings', to: '/dashboard/settings', icon: Settings },
-    ],
-  },
+  // {
+  //   label: 'Workspace',
+  //   items: [
+  //     { label: 'Team', to: '/dashboard/team', icon: Users },
+  //     { label: 'Usage & billing', to: '/dashboard/usage', icon: Zap },
+  //     { label: 'Audit log', to: '/dashboard/audit', icon: Shield },
+  //     { label: 'Settings', to: '/dashboard/settings', icon: Settings },
+  //   ],
+  // },
 ]
 
 /** Breadcrumb labels by path segment. */
