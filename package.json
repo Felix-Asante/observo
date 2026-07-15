@@ -7,7 +7,9 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "api:dev": "turbo run dev --filter=@observo/api"
+    "api:dev": "turbo run dev --filter=@observo/api",
+    "sdk:build": "turbo run build --filter=@getobservo/core --filter=@getobservo/node",
+    "sdk:test": "turbo run test --filter=@getobservo/core --filter=@getobservo/node"
   },
   "devDependencies": {
     "turbo": "^2.5.4"

@@ -129,12 +129,19 @@ observo/
 │   ├── ui/                  # @observo/ui — shared React components
 │   ├── utils/               # @observo/utils
 │   ├── http-client/         # @observo/http-client
-│   └── tailwind-config/     # design tokens (“Iris on Ink”)
+│   ├── tailwind-config/     # design tokens (“Iris on Ink”)
+│   ├── sdk-core/            # @getobservo/core — isomorphic ingest client
+│   └── sdk-node/            # @getobservo/node — Node helper + exit flush
 ├── docs/screenshots/
 └── pnpm-workspace.yaml
 ```
 
-Ingest works over HTTP today; first-party SDKs are a natural next package in the workspace.
+Client SDKs:
+
+```bash
+pnpm sdk:build
+# npm i @getobservo/node  (when published)
+```
 
 ---
 
