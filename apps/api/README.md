@@ -19,7 +19,18 @@ pnpm dev          # PORT=8081 recommended
 |--------|-------------|
 | `pnpm dev` | Nest watch mode |
 | `pnpm build` | Compile |
-| `pnpm db:generate` / `pnpm db:migrate` | Drizzle |
+| `pnpm db:generate` / `pnpm db:migrate` | Drizzle (local, via drizzle-kit) |
+| `pnpm db:migrate:prod` | Run SQL migrations from `drizzle/` (production image / Railway release) |
 | `pnpm test` | Jest |
+
+### Railway
+
+Set the service **Release Command** to:
+
+```bash
+node dist/src/database/migrate.js
+```
+
+That runs once per deploy before the new container starts serving traffic.
 
 API base path: `/api/v1`.

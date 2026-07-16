@@ -65,7 +65,36 @@ services:
       - nats_data:/var/lib/nats
     command: ['nats-server', '-js', '-m', '8222']
 
+  observo-api:
+    image: felixasante/observo-api:latest
+    container_name: observo-api
+    restart: unless-stopped
+    ports:
+      - '8081:8081'
+    volumes:
+      - api_data:/app/data
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_DB=${REDIS_DB}
+      - REDIS_KEY=${REDIS_KEY}
+      - CLICKHOUSE_URL=${CLICKHOUSE_URL}
+      - CLICKHOUSE_USER=${CLICKHOUSE_USER}
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
+      - CLICKHOUSE_DATABASE=${CLICKHOUSE_DATABASE}
+      - NATS_URL=${NATS_URL}
+      - DATABASE_URL=${DATABASE_URL}
+      - PORT=${PORT}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - NODE_ENV=${NODE_ENV}
+    depends_on:
+      - redis
+      - clickhouse
+      - nats
+
 volumes:
   redis_data:
   clickhouse_data:
   nats_data:
+  api_data:

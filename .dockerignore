@@ -1,0 +1,22 @@
+# Build context is the monorepo root (see apps/api/Dockerfile header).
+.git
+.github
+.cursor
+**/.turbo
+**/coverage
+**/dist
+**/node_modules
+**/.env
+**/.env.*
+!**/.env.example
+**/README.md
+docs
+
+# API has no deps on web or shared packages.
+apps/web
+packages
+
+apps/api/docker-compose.yml
+apps/api/test
+apps/api/**/*.spec.ts
+apps/api/pnpm-lock.yaml
