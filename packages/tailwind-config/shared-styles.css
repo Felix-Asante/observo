@@ -10,12 +10,11 @@
  *   3. utilities — surfaces, depth, gradients, syntax tokens, reveals
  */
 
-@import url("https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&display=swap");
-
 @import "tailwindcss";
 
 @theme {
   /* ─── Typography ─────────────────────────────────────────── */
+  /* Faces are self-hosted in apps/web (see styles.css + public/fonts). */
   --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, "SF Mono", monospace;
 
