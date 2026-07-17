@@ -31,4 +31,6 @@ export const ENV = {
   CLICKHOUSE_PASSWORD: env('CLICKHOUSE_PASSWORD').asString(),
   CLICKHOUSE_DATABASE: env('CLICKHOUSE_DATABASE').asString(),
   NATS_URL: env('NATS_URL').required().asString(),
+  GITHUB_CLIENT_ID: env('GITHUB_CLIENT_ID').required().asString(),
+  GITHUB_CLIENT_SECRET: env('GITHUB_CLIENT_SECRET').required().asString(),
 };

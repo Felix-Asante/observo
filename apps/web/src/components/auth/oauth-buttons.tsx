@@ -53,7 +53,7 @@ export function OAuthButtons() {
     label: string
     icon: React.ReactNode
   }> = [
-    { id: 'google', label: 'Google', icon: <GoogleIcon /> },
+    // { id: 'google', label: 'Google', icon: <GoogleIcon /> },
     { id: 'github', label: 'GitHub', icon: <GitHubIcon /> },
   ]
 
@@ -77,7 +77,7 @@ export function OAuthButtons() {
           size="lg"
           loading={pending === provider.id}
           disabled={pending !== null && pending !== provider.id}
-          className="w-full"
+          className="sm:col-span-2"
           onClick={() => handleSocialSignIn(provider.id)}
         >
           {pending === provider.id ? null : provider.icon}

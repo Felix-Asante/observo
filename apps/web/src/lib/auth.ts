@@ -45,7 +45,7 @@ export async function signInWithProvider(
 ) {
   const { error } = await authClient.signIn.social({
     provider,
-    callbackURL,
+    callbackURL: window.location.origin + callbackURL,
   })
 
   assertNoAuthError(error, `Unable to sign in with ${provider}.`)
