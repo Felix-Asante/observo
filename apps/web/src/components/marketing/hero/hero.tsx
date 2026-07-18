@@ -11,16 +11,17 @@ import {
 } from '@observo/ui'
 
 import { Reveal } from '#/components/animations/reveal'
-import { stats } from '#/data/stats'
 
-const LogExplorer = lazy(() =>
-  import('./log-explorer').then((m) => ({ default: m.LogExplorer })),
+const DashboardLogsPreview = lazy(() =>
+  import('./dashboard-logs-preview').then((m) => ({
+    default: m.DashboardLogsPreview,
+  })),
 )
 
-function LogExplorerFallback() {
+function LogsPreviewFallback() {
   return (
     <div
-      className="surface-card h-[320px] w-full overflow-hidden rounded-2xl border border-border sm:h-[360px]"
+      className="surface-card h-[420px] w-full overflow-hidden rounded-xl border border-border sm:h-[460px]"
       aria-hidden
     />
   )
@@ -95,42 +96,9 @@ export function Hero() {
             aria-hidden
             className="absolute -inset-x-8 -top-12 -bottom-16 rounded-[3rem] bg-[radial-gradient(ellipse_60%_50%_at_50%_40%,var(--glow-iris-soft),transparent_70%)]"
           />
-          <Suspense fallback={<LogExplorerFallback />}>
-            <LogExplorer />
+          <Suspense fallback={<LogsPreviewFallback />}>
+            <DashboardLogsPreview />
           </Suspense>
-
-          <div className="surface-glass absolute -right-5 -bottom-6 hidden items-center gap-3 rounded-xl px-4 py-3 lg:flex">
-            <span className="flex size-8 items-center justify-center rounded-lg bg-success/10 text-success">
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 14 14"
-                fill="none"
-                aria-hidden
-              >
-                <path
-                  d="M7 1v5l3 2"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <circle
-                  cx="7"
-                  cy="7"
-                  r="6"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                />
-              </svg>
-            </span>
-            <div>
-              <p className="text-sm font-semibold text-ink-50">
-                {stats.searchP99Ms}ms
-              </p>
-              <p className="text-2xs text-ink-400">p99 query latency</p>
-            </div>
-          </div>
         </Reveal>
       </Container>
     </section>
