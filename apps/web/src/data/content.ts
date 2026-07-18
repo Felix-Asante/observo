@@ -203,6 +203,7 @@ export const faqs = [
   },
 ] as const
 
+/** Demo rows shaped like dashboard `LogEvent`s for the marketing hero. */
 export const heroLogLines = [
   {
     time: '14:32:01.284',
