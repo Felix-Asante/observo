@@ -1,42 +1,83 @@
-# `@getobservo/core`
+# `@getobservo/node`
 
-Isomorphic Observo client: bounded queue, batching, retries, and POST to `/logs/send`.
+Node.js / Bun SDK for Observo log ingest. Buffers events, flushes on an interval, and drains the buffer on process shutdown.
 
 ## Install
 
 ```bash
-npm install @getobservo/core
+npm install @getobservo/node
+```
+
+Requires Node.js 18+.
+
+## Setup
+
+Set the Observo API base URL (scheme + host, no path):
+
+```bash
+API_URL=https://api.example.com
 ```
 
 ## Usage
 
 ```ts
-import { ObservoClient } from '@getobservo/core'
+import { createLogger } from '@getobservo/node'
 
-const client = new ObservoClient({
+const log = createLogger({
   apiKey: process.env.OBSERVO_API_KEY!,
-  baseUrl: process.env.OBSERVO_BASE_URL!, // e.g. https://api.example.com/api/v1
   appName: 'api',
-  environment: 'production',
-  onError: (error, ctx) => {
-    console.error('[observo]', ctx.phase, error)
-  },
+  environment: process.env.NODE_ENV ?? 'development',
 })
 
-client.info('checkout.completed', { operation: 'checkout.create' })
-await client.close()
+log.info('checkout.completed', { operation: 'checkout.create' })
+log.error('payment.failed', {
+  operation: 'payment.charge',
+  importance: 'high',
+  metrics: { latency_ms: 420, db_query_count: 2 },
+})
 ```
 
-## Behavior
+Each level method accepts a message and optional fields (everything on `ObservoLogInput` except `type` and `message`).
+
+### Log levels
+
+`info` · `warning` · `error` · `debug` · `trace` · `audit` · `success` · `security`
+
+## Options
 
 | Option | Default | Notes |
 | --- | --- | --- |
-| `flushAt` | `20` | Flush when this many events are queued |
-| `flushIntervalMs` | `2000` | Time-based flush |
-| `maxQueueSize` | `1000` | Hard cap |
-| `overflow` | `drop-oldest` | Or `drop-newest` |
-| `timeoutMs` | `10000` | Per-attempt HTTP timeout |
-| `maxRetries` | `3` | Attempts per batch |
-| `retryBaseDelayMs` | `250` | Exponential backoff + jitter |
+| `apiKey` | — | Required. Sent as `x-api-key` |
+| `environment` | `development` | Sent as `x-environment` |
+| `appName` | `default` | Sent as `x-app-name` |
+| `bufferSize` | `100` | Max events flushed per request |
+| `flushInterval` | `2000` | Debounce window (ms) before a flush |
 
-Prefer `@getobservo/node` in Node for `init()` and process-exit flushing.
+`API_URL` must be a valid absolute URL. The client POSTs batches to `{API_URL}/api/v1/logs`.
+
+## Behavior
+
+- Events are queued in memory and flushed after `flushInterval`, up to `bufferSize` per request.
+- On `SIGINT` / `SIGTERM` / `SIGQUIT` / `beforeExit`, remaining buffered events are flushed before exit.
+- Failed flushes are logged to stderr; events from that attempt are not re-queued.
+
+## Advanced
+
+You can use the transport directly if you need lower-level control:
+
+```ts
+import { ObservoTransport } from '@getobservo/node'
+
+const transport = new ObservoTransport({
+  apiKey: process.env.OBSERVO_API_KEY!,
+})
+
+await transport.send({
+  type: 'info',
+  message: 'checkout.completed',
+  operation: 'checkout.create',
+  ingested_at: Date.now(),
+})
+
+await transport.flush()
+```

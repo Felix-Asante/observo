@@ -102,7 +102,7 @@ export class ObservoTransport {
 
     try {
       this.flushTimer = null;
-      const response = await fetch(`${this.baseUrl}/api/v1/logs`, {
+      const response = await fetch(`${this.baseUrl}/logs`, {
         method: "POST",
         body: JSON.stringify({ logs }),
         headers: this.headers,
