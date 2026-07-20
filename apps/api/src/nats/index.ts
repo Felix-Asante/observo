@@ -5,14 +5,12 @@ const jc = JSONCodec();
 let natsConnection: NatsConnection | null = null;
 
 export async function getNats() {
-  if (!natsConnection) {
-    natsConnection = await connect({
-      servers: ENV.NATS_URL,
-      name: 'observo-server',
-    });
-  }
+  natsConnection ??= await connect({
+    servers: ENV.NATS_URL,
+    name: 'observo-server',
+  });
 
-  console.log('NATS connected');
+  console.log('NATS connected 🚀');
 
   return { natsConnection, jc };
 }

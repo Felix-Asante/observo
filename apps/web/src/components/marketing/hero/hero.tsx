@@ -1,4 +1,5 @@
 import { ArrowRight } from 'lucide-react'
+import { lazy, Suspense } from 'react'
 import { Link } from '@tanstack/react-router'
 import {
   Badge,
@@ -10,8 +11,21 @@ import {
 } from '@observo/ui'
 
 import { Reveal } from '#/components/animations/reveal'
-import { stats } from '#/data/stats'
-import { LogExplorer } from './log-explorer'
+
+const DashboardLogsPreview = lazy(() =>
+  import('./dashboard-logs-preview').then((m) => ({
+    default: m.DashboardLogsPreview,
+  })),
+)
+
+function LogsPreviewFallback() {
+  return (
+    <div
+      className="surface-card h-[420px] w-full overflow-hidden rounded-xl border border-border sm:h-[460px]"
+      aria-hidden
+    />
+  )
+}
 
 export function Hero() {
   return (
@@ -27,14 +41,14 @@ export function Hero() {
 
       <Container className="relative">
         <div className="mx-auto max-w-3xl text-center">
-          <Reveal>
+          <Reveal mode="rise" immediate y={10}>
             <Badge variant="iris" className="mb-8">
               <StatusDot tone="iris" pulse />
               v1.0 is now live
             </Badge>
           </Reveal>
 
-          <Reveal delay={0.06}>
+          <Reveal mode="rise" immediate delay={0.08} y={14}>
             <h1 className="text-[2.75rem] leading-[1.06] font-medium tracking-tightest text-balance sm:text-6xl md:text-[4.25rem]">
               <GradientText>Know what broke —</GradientText>
               <br />
@@ -44,7 +58,7 @@ export function Hero() {
             </h1>
           </Reveal>
 
-          <Reveal delay={0.12}>
+          <Reveal mode="rise" immediate delay={0.16} y={12}>
             <p className="mx-auto mt-7 max-w-xl text-lg leading-relaxed text-pretty text-ink-300 md:text-xl">
               Observability that sets up like a side project and scales like
               infrastructure. Errors, requests, and performance in one place —
@@ -52,7 +66,7 @@ export function Hero() {
             </p>
           </Reveal>
 
-          <Reveal delay={0.18}>
+          <Reveal mode="rise" immediate delay={0.24} y={10}>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-3.5">
               <Link to="/sign-up" className={buttonVariants({ size: 'lg' })}>
                 Get started
@@ -64,58 +78,27 @@ export function Hero() {
             </div>
           </Reveal>
 
-          <Reveal delay={0.24}>
-            <p className="mt-7 font-mono text-xs text-ink-500">
+          <Reveal mode="rise" immediate delay={0.32} y={8}>
+            <p className="mt-7 text-xs text-ink-500">
               free for side projects · no credit card required
             </p>
           </Reveal>
         </div>
 
         <Reveal
-          delay={0.15}
-          y={28}
+          mode="rise"
+          immediate
+          delay={0.28}
+          y={20}
           className="relative mx-auto mt-16 max-w-4xl md:mt-20"
         >
-          {/* Glow behind the preview */}
           <div
             aria-hidden
             className="absolute -inset-x-8 -top-12 -bottom-16 rounded-[3rem] bg-[radial-gradient(ellipse_60%_50%_at_50%_40%,var(--glow-iris-soft),transparent_70%)]"
           />
-          <LogExplorer />
-
-          {/* Floating perf chip */}
-          <div className="surface-glass absolute -right-5 -bottom-6 hidden items-center gap-3 rounded-xl px-4 py-3 lg:flex">
-            <span className="flex size-8 items-center justify-center rounded-lg bg-success/10 text-success">
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 14 14"
-                fill="none"
-                aria-hidden
-              >
-                <path
-                  d="M7 1v5l3 2"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <circle
-                  cx="7"
-                  cy="7"
-                  r="6"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                />
-              </svg>
-            </span>
-            <div>
-              <p className="text-sm font-semibold text-ink-50">
-                {stats.searchP99Ms}ms
-              </p>
-              <p className="text-2xs text-ink-400">p99 query latency</p>
-            </div>
-          </div>
+          <Suspense fallback={<LogsPreviewFallback />}>
+            <DashboardLogsPreview />
+          </Suspense>
         </Reveal>
       </Container>
     </section>

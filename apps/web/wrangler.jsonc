@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "observo-web",
+  "compatibility_date": "2025-09-02",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "@tanstack/react-start/server-entry",
+
+  "env": {
+    "staging": {
+      "name": "observo-web-staging",
+    },
+    "production": {
+      "name": "observo-web",
+    },
+  },
+}

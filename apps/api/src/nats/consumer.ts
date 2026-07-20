@@ -6,6 +6,7 @@ import {
   type JSONCodec,
 } from 'nats';
 import { getNats } from './index';
+import { initNatsStream } from './init-stream';
 import { ENV } from '~/app.environment';
 import Redis from 'ioredis';
 import { clickhouseClient } from '~/clickhouse/client';
@@ -14,6 +15,7 @@ import type { LogPayload } from './types';
 import { broadcastLogs } from '~/sse/sse-registry';
 import {
   isConsumerNotFound,
+  isStreamNotFound,
   LOG_CONSUMER_DURABLE,
   LOG_INGEST_SUBJECT,
   LOG_STREAM_NAME,
@@ -61,6 +63,9 @@ export async function startLogConsumer() {
   const js = natsConnection.jetstream();
   const jsm = await natsConnection.jetstreamManager();
 
+  // Ensure stream exists before binding the durable consumer (fresh JetStream nodes).
+  await initNatsStream();
+
   await ensurePullConsumer(jsm);
 
   const consumer = await js.consumers.get(
@@ -89,12 +94,15 @@ async function ensurePullConsumer(jsm: JetStreamManager) {
       console.warn(
         `Deleting stale push consumer ${LOG_CONSUMER_DURABLE}; recreating as pull consumer`,
       );
+
       await jsm.consumers.delete(LOG_STREAM_NAME, LOG_CONSUMER_DURABLE);
     } else {
       return;
     }
   } catch (error) {
-    if (!isConsumerNotFound(error)) {
+    if (isStreamNotFound(error)) {
+      await initNatsStream();
+    } else if (!isConsumerNotFound(error)) {
       console.error('JetStream consumer check failed', error);
       throw error;
     }

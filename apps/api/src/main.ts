@@ -14,9 +14,11 @@ async function bootstrap() {
   await createLogsTable().catch((error) =>
     console.error('ClickHouse schema init error', error),
   );
-  await initNatsStream().catch((error) =>
-    console.error('NATS stream init error', error),
-  );
+  try {
+    await initNatsStream();
+  } catch (error) {
+    console.error('NATS stream init error', error);
+  }
 
   void startLogConsumer().catch((error) =>
     console.error('Log consumer error', error),
@@ -28,8 +30,7 @@ async function bootstrap() {
     defaultVersion: '1',
   });
   app.enableCors({
-    origin:
-      ENV.NODE_ENV === Environment.PRODUCTION ? ENV.FRONTEND_URL : true,
+    origin: ENV.NODE_ENV === Environment.PRODUCTION ? ENV.FRONTEND_URL : true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true,
   });

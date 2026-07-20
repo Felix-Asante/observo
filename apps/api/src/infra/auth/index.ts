@@ -12,6 +12,13 @@ const authConfig = {
   emailAndPassword: {
     enabled: true,
   },
+  socialProviders: {
+    github: {
+      clientId: ENV.GITHUB_CLIENT_ID,
+      clientSecret: ENV.GITHUB_CLIENT_SECRET,
+      prompt: 'select_account' as const,
+    },
+  },
   plugins: [],
   database: drizzleAdapter(db, {
     provider: 'pg',

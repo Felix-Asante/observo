@@ -19,16 +19,20 @@ export const getCookieHeader = createServerFn({ method: 'GET' }).handler(
 
 export const fetchAuthSession = createServerFn({ method: 'GET' }).handler(
   async () => {
-    const cookie = await getCookieHeader()
-    const response = await httpClient.get(API_ENDPOINTS.auth.me(), {
-      headers: { cookie },
-    })
+    try {
+      const cookie = await getCookieHeader()
+      const response = await httpClient.get(API_ENDPOINTS.auth.me(), {
+        headers: { cookie },
+      })
 
-    if (!response.data) {
+      if (!response.data) {
+        return null
+      }
+
+      return response.data
+    } catch {
       return null
     }
-
-    return response.data
   },
 )
 

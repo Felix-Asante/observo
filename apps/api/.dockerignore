@@ -1,0 +1,21 @@
+# Prefer building from the monorepo root:
+#   docker build -f apps/api/Dockerfile -t observo-api .
+node_modules
+dist
+coverage
+.turbo
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+*.md
+docker-compose*.yml
+test
+**/*.spec.ts
+drizzle.config.ts
+pnpm-lock.yaml
+.DS_Store
+*.log
+.vscode
+.idea
