@@ -6,17 +6,16 @@ function stripApiVersion(url: string) {
   return url.replace(/\/api\/v\d+\/?$/, '').replace(/\/$/, '')
 }
 
-function usesExternalApiHost() {
-  return (
-    Boolean(serverApiUrl?.startsWith('http')) && !apiPath.startsWith('http')
-  )
-}
-
+/**
+ * Browser calls must stay same-origin (`/api/v1`) so Better Auth session
+ * cookies are set on the web host. The Workers `/api` proxy (and Vite
+ * proxy in local dev) forward to the Railway API.
+ *
+ * Server functions call the Railway API directly via VITE_SERVER_API_URL
+ * and forward the incoming Cookie header.
+ */
 export function getApiBaseUrl() {
   if (typeof window !== 'undefined') {
-    if (usesExternalApiHost() && serverApiUrl) {
-      return serverApiUrl.replace(/\/$/, '')
-    }
     return apiPath
   }
 
@@ -24,6 +23,13 @@ export function getApiBaseUrl() {
 }
 
 export function getAuthBaseUrl() {
+  if (typeof window !== 'undefined') {
+    if (!apiPath.startsWith('http')) {
+      return window.location.origin
+    }
+    return stripApiVersion(apiPath)
+  }
+
   if (apiPath.startsWith('http')) {
     return stripApiVersion(apiPath)
   }
@@ -32,13 +38,9 @@ export function getAuthBaseUrl() {
     return stripApiVersion(serverApiUrl)
   }
 
-  if (typeof window !== 'undefined') {
-    return window.location.origin
-  }
-
   return stripApiVersion(serverApiUrl ?? 'http://localhost:8081/api/v1')
 }
 
 export function getObservoIngestHost() {
-  return getApiBaseUrl().replace(/\/$/, '')
+  return (serverApiUrl ?? getApiBaseUrl()).replace(/\/$/, '')
 }

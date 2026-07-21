@@ -6,7 +6,10 @@ import * as schema from '../../database/schema';
 
 const { User, Session, Account, Verification, ...restSchema } = schema;
 
-const isProduction = ENV.NODE_ENV === Environment.PRODUCTION;
+const useCrossOriginAuth =
+  ENV.NODE_ENV === Environment.PRODUCTION ||
+  ENV.NODE_ENV === Environment.STAGING ||
+  ENV.NODE_ENV === Environment.DEVELOPMENT;
 
 const authConfig = {
   emailAndPassword: {
@@ -30,12 +33,18 @@ const authConfig = {
       verification: Verification,
     },
   }),
+
+  baseURL: ENV.FRONTEND_URL,
   trustedOrigins: [ENV.FRONTEND_URL],
+  account: {
+    storeStateStrategy: 'database' as const,
+    skipStateCookieCheck: useCrossOriginAuth,
+  },
   advanced: {
-    disableOriginCheck: !isProduction,
+    disableOriginCheck: !useCrossOriginAuth,
     defaultCookieAttributes: {
-      sameSite: isProduction ? ('none' as const) : ('lax' as const),
-      secure: isProduction,
+      sameSite: useCrossOriginAuth ? ('none' as const) : ('lax' as const),
+      secure: useCrossOriginAuth,
       httpOnly: true,
     },
     database: {
