@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { ObservoLogInput, ObservoTransportOptions } from "./types.js";
 
 export interface ObservoTransport {
@@ -32,14 +31,12 @@ export class ObservoTransport {
   private shuttingDown: boolean = false;
 
   constructor(options: ObservoTransportOptions) {
-    const apiBaseUrl = getEnv("API_URL", "http://localhost:8081/api/v1");
-
-    if (!isValidUrl(apiBaseUrl ?? "")) {
+    if (!isValidUrl(options.host)) {
       throw new Error("Invalid base URL");
     }
 
     this.apiKey = options.apiKey;
-    this.baseUrl = apiBaseUrl || "";
+    this.baseUrl = options.host ?? "";
     this.environment = options.environment ?? "development";
     this.appName = options.appName ?? "default";
     this.bufferSize = options.bufferSize ?? 100;

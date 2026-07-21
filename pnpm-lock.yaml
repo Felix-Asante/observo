@@ -306,10 +306,6 @@ importers:
         version: 1.18.1
 
   packages/sdk-node:
-    dependencies:
-      dotenv:
-        specifier: ^17.4.2
-        version: 17.4.2
     devDependencies:
       tsup:
         specifier: ^8.5.1

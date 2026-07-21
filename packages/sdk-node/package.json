@@ -56,8 +56,5 @@
     "observability",
     "nodejs-observability",
     "nodejs-logging"
-  ],
-  "dependencies": {
-    "dotenv": "^17.4.2"
-  }
+  ]
 }

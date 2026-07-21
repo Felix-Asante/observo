@@ -48,6 +48,7 @@ export type ObservoLogInput = {
 
 export type ObservoTransportOptions = {
   apiKey: string;
+  host: string;
   environment?: string;
   appName?: string;
   bufferSize?: number;
