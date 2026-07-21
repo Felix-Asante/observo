@@ -4,10 +4,6 @@ export interface ObservoTransport {
   send(event: ObservoLogInput): Promise<void>;
 }
 
-function getEnv(name: string, defaultValue?: string) {
-  return process.env[name] ?? defaultValue;
-}
-
 function isValidUrl(url: string) {
   try {
     new URL(url);
