@@ -1,7 +1,6 @@
 import type { LogLevel } from '#/data/dashboard/types'
 
 export type ApiLog = {
-  keyId: string
   userId: string
   type: string
   message: string

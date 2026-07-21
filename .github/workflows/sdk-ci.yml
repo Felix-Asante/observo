@@ -1,0 +1,53 @@
+name: SDK CI
+
+on:
+  pull_request:
+    paths:
+      - 'packages/sdk-**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/sdk-ci.yml'
+      - '.github/workflows/publish-sdk.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/sdk-**'
+      - 'pnpm-lock.yaml'
+
+jobs:
+  build:
+    name: Build SDK packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm turbo run build --filter='./packages/sdk-*'
+
+      - name: Verify publish bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          for pkg_dir in packages/sdk-*/; do
+            echo "Checking ${pkg_dir}"
+            (cd "${pkg_dir}" && npm pack --dry-run)
+            if strings "${pkg_dir}"/dist/*.{js,cjs} 2>/dev/null | rg -q 'OBV:[a-f0-9]{32}:'; then
+              echo "Possible API key found in ${pkg_dir}/dist"
+              exit 1
+            fi
+          done

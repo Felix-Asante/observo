@@ -1,0 +1,99 @@
+name: Publish SDKs
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: 'Package to publish (e.g. @getobservo/node). Leave empty to publish all packages/sdk-*.'
+        required: false
+        type: string
+  push:
+    tags:
+      - '@getobservo/*'
+
+concurrency:
+  group: publish-sdk-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Resolve publish target
+        id: target
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            tag="${GITHUB_REF#refs/tags/}"
+            pkg="${tag%@*}"
+            version="${tag#*@}"
+            echo "filter=${pkg}" >> "$GITHUB_OUTPUT"
+            echo "version=${version}" >> "$GITHUB_OUTPUT"
+            echo "Publishing ${pkg}@${version} from tag"
+          elif [ -n "${{ inputs.package }}" ]; then
+            echo "filter=${{ inputs.package }}" >> "$GITHUB_OUTPUT"
+            echo "Publishing ${{ inputs.package }} (manual)"
+          else
+            echo "filter=./packages/sdk-*" >> "$GITHUB_OUTPUT"
+            echo "Publishing all SDK packages (manual)"
+          fi
+
+      - name: Verify tag version matches package.json
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          pkg="${{ steps.target.outputs.filter }}"
+          expected="${{ steps.target.outputs.version }}"
+          actual=$(pnpm --filter "$pkg" exec node -p "require('./package.json').version")
+          if [ "$actual" != "$expected" ]; then
+            echo "Tag version ${expected} does not match package.json version ${actual} for ${pkg}"
+            exit 1
+          fi
+
+      - name: Build
+        run: pnpm turbo run build --filter='${{ steps.target.outputs.filter }}'
+
+      - name: Verify publish bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t packages < <(pnpm list -r --filter '${{ steps.target.outputs.filter }}' --depth -1 --parseable)
+          for pkg_dir in "${packages[@]}"; do
+            echo "Checking ${pkg_dir}"
+            if [ ! -d "${pkg_dir}/dist" ]; then
+              echo "Missing dist/ in ${pkg_dir}"
+              exit 1
+            fi
+            (cd "${pkg_dir}" && npm pack --dry-run)
+            if strings "${pkg_dir}"/dist/*.{js,cjs} 2>/dev/null | rg -q 'OBV:[a-f0-9]{32}:'; then
+              echo "Possible API key found in ${pkg_dir}/dist"
+              exit 1
+            fi
+          done
+
+      - name: Publish to npm
+        run: pnpm publish -r --filter '${{ steps.target.outputs.filter }}' --access public --no-git-checks --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

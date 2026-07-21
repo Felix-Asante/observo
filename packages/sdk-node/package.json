@@ -1,0 +1,60 @@
+{
+  "name": "@getobservo/node",
+  "version": "1.0.0",
+  "description": "Node.js client for Observo log ingest",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --minify --clean --target node18",
+    "dev": "tsc -p tsconfig.json --watch",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "pnpm build && node --test test/**/*.test.mjs"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.1",
+    "typescript": "^5.8.2"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Felix-Asante/observo"
+  },
+  "homepage": "https://github.com/Felix-Asante/observo",
+  "bugs": {
+    "url": "https://github.com/Felix-Asante/observo/issues"
+  },
+  "author": {
+    "name": "Felix Asante",
+    "email": "webdevfelix@gmail.com",
+    "url": "https://github.com/Felix-Asante"
+  },
+  "keywords": [
+    "observo",
+    "logging",
+    "logging-sdk",
+    "observability",
+    "nodejs-observability",
+    "nodejs-logging"
+  ]
+}

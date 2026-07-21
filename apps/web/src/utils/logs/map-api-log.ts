@@ -127,7 +127,7 @@ export function mapApiLogToEvent(log: ApiLog, index: number): LogEvent {
       : undefined
 
   return {
-    id: `${log.keyId}:${log.timestamp}:${index}`,
+    id: `${log.userId}:${log.timestamp}:${index}`,
     time: formatTime(date),
     date: formatDate(date),
     level: toLevel(log.type),
@@ -140,14 +140,18 @@ export function mapApiLogToEvent(log: ApiLog, index: number): LogEvent {
     latencyMs,
     dbQueryCount,
     payload: {
-      keyId: log.keyId,
       type: log.type,
-      ...(log.service !== null ? { service: log.service } : {}),
+      ...(log.service ? { service: log.service } : {}),
       ...(track ? { track } : {}),
       ...(security ? { security } : {}),
       ...(metrics ? { metrics } : {}),
-      ingestedAt: log.ingestedAt,
-      timestamp: log.timestamp,
+      ...(log.importance ? { importance: toImportance(log.importance) } : {}),
+      ...(log.ingestedAt ? { ingestedAt: log.ingestedAt } : {}),
+      ...(log.timestamp ? { timestamp: log.timestamp } : {}),
+      ...(log.environment
+        ? { environment: toEnvironment(log.environment) }
+        : {}),
+      ...(log.subsystem ? { subsystem: toSubsystem(log.subsystem) } : {}),
     },
   }
 }

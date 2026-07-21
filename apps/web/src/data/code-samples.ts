@@ -22,22 +22,33 @@ export const codeSamples: Array<CodeSample> = [
   {
     id: 'node',
     label: 'Node.js',
-    install: 'npm install @observo/sdk',
+    install: 'npm install @getobservo/node',
     lines: [
       [
         { text: 'import', tok: 'kw' },
         { text: ' { observo } ' },
         { text: 'from', tok: 'kw' },
         { text: ' ' },
-        { text: "'@observo/sdk'", tok: 'str' },
+        { text: "'@getobservo/node'", tok: 'str' },
       ],
       [],
       [
         { text: 'observo.', tok: 'key' },
         { text: 'init', tok: 'fn' },
-        { text: '({ apiKey: ', tok: 'punct' },
-        { text: 'process.env.OBSERVO_KEY' },
-        { text: ' })', tok: 'punct' },
+        { text: '({', tok: 'punct' },
+      ],
+      [
+        { text: '  apiKey: ', tok: 'key' },
+        { text: 'process.env.OBSERVO_API_KEY' },
+        { text: ',', tok: 'punct' },
+      ],
+      [
+        { text: '  baseUrl: ', tok: 'key' },
+        { text: 'process.env.OBSERVO_BASE_URL' },
+        { text: ',', tok: 'punct' },
+      ],
+      [
+        { text: '})', tok: 'punct' },
       ],
       [],
       [
@@ -63,33 +74,35 @@ export const codeSamples: Array<CodeSample> = [
   {
     id: 'nextjs',
     label: 'Next.js',
-    install: 'npm install @observo/next',
+    install: 'npm install @getobservo/node',
     lines: [
       [{ text: '// instrumentation.ts', tok: 'cm' }],
       [
         { text: 'import', tok: 'kw' },
-        { text: ' { register } ' },
+        { text: ' { observo } ' },
         { text: 'from', tok: 'kw' },
         { text: ' ' },
-        { text: "'@observo/next'", tok: 'str' },
+        { text: "'@getobservo/node'", tok: 'str' },
       ],
       [],
       [
-        { text: 'export', tok: 'kw' },
-        { text: ' ' },
-        { text: 'const', tok: 'kw' },
-        { text: ' onRequestError = ' },
-        { text: 'register', tok: 'fn' },
+        { text: 'observo.', tok: 'key' },
+        { text: 'init', tok: 'fn' },
         { text: '({', tok: 'punct' },
       ],
       [
         { text: '  apiKey: ', tok: 'key' },
-        { text: 'process.env.OBSERVO_KEY' },
+        { text: 'process.env.OBSERVO_API_KEY' },
         { text: ',', tok: 'punct' },
       ],
       [
-        { text: '  traces: ', tok: 'key' },
-        { text: 'true', tok: 'num' },
+        { text: '  baseUrl: ', tok: 'key' },
+        { text: 'process.env.OBSERVO_BASE_URL' },
+        { text: ',', tok: 'punct' },
+      ],
+      [
+        { text: '  appName: ', tok: 'key' },
+        { text: "'web'", tok: 'str' },
         { text: ',', tok: 'punct' },
       ],
       [{ text: '})', tok: 'punct' }],

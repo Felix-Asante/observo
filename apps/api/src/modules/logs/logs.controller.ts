@@ -14,6 +14,7 @@ import type { Response as ExpressResponse } from 'express';
 import { AddLogsDto } from '~/modules/logs/dto/add-log.dto';
 import { StreamLogsQueryDto } from '~/modules/logs/dto/stream-logs-query.dto';
 import {
+  AllowAnonymous,
   AuthGuard,
   Session,
   type UserSession,
@@ -24,6 +25,7 @@ export class LogsController {
   constructor(private readonly logsService: LogsService) {}
 
   @Post('send')
+  @AllowAnonymous()
   @UseGuards(SDKAuthGuard)
   sendLogs(@Body() body: AddLogsDto, @Req() req: RequestWithUser) {
     return this.logsService.sendLogs(body, req.user.keyId, req.user.id);
