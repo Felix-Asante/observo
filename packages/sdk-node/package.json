@@ -1,6 +1,6 @@
 {
   "name": "@getobservo/node",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Node.js client for Observo log ingest",
   "license": "MIT",
   "type": "module",
@@ -40,7 +40,7 @@
     "type": "git",
     "url": "https://github.com/Felix-Asante/observo"
   },
-  "homepage": "https://github.com/Felix-Asante/observo",
+  "homepage": "https://observo-web.cwfelix.workers.dev",
   "bugs": {
     "url": "https://github.com/Felix-Asante/observo/issues"
   },
