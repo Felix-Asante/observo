@@ -1,4 +1,5 @@
-const apiPath = import.meta.env.VITE_API_URL as string
+export const apiPath = import.meta.env.VITE_API_URL as string
+export const serverApiUrl = import.meta.env.VITE_SERVER_API_URL as string
 
 export function getApiBaseUrl() {
   if (typeof window !== 'undefined') {

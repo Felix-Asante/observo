@@ -1,62 +1,48 @@
 export type SdkTab = {
   id: string
   label: string
-  install: string
-  init: string
-  example: string
+  comingSoon?: boolean
+  /** npm package README or other full docs */
+  docsUrl?: string
+  install?: string
+  init?: string
+  example?: string
 }
+
+export const NODE_SDK_DOCS_URL =
+  'https://www.npmjs.com/package/@getobservo/node'
 
 export const sdkTabs: Array<SdkTab> = [
   {
     id: 'node',
     label: 'Node.js',
+    docsUrl: NODE_SDK_DOCS_URL,
     install: 'npm install @getobservo/node',
-    init: `import { observo } from '@getobservo/node'
+    init: `import { createLogger } from '@getobservo/node'
 
-observo.init({
+export const log = createLogger({
   apiKey: process.env.OBSERVO_API_KEY!,
-  baseUrl: process.env.OBSERVO_BASE_URL!,
+  host: process.env.OBSERVO_HOST!,
   appName: 'api',
-  environment: 'production',
+  environment: process.env.NODE_ENV ?? 'production',
 })`,
-    example: `observo.info('checkout.completed', {
+    example: `log.info('checkout.completed', {
   operation: 'checkout.create',
+})
+
+log.error('payment.failed', {
+  operation: 'payment.charge',
+  importance: 'high',
 })`,
   },
   {
     id: 'nextjs',
     label: 'Next.js',
-    install: 'npm install @getobservo/next',
-    init: `// instrumentation.ts — @getobservo/next coming soon
-// For now use @getobservo/node:
-import { observo } from '@getobservo/node'
-
-observo.init({
-  apiKey: process.env.OBSERVO_API_KEY!,
-  baseUrl: process.env.OBSERVO_BASE_URL!,
-  appName: 'web',
-  environment: process.env.NODE_ENV,
-})`,
-    example: `observo.error('route.failed', {
-  operation: 'checkout',
-})`,
-  },
-  {
-    id: 'python',
-    label: 'Python',
-    install: 'pip install observo  # planned',
-    init: `import observo
-
-observo.init(api_key=os.environ["OBSERVO_API_KEY"])`,
-    example: `observo.info("job.finished", duration_ms=184)`,
+    comingSoon: true,
   },
   {
     id: 'go',
     label: 'Go',
-    install: 'go get github.com/getobservo/observo-go  # planned',
-    init: `client := observo.New(os.Getenv("OBSERVO_API_KEY"))`,
-    example: `client.Info(ctx, "deploy.rollout", observo.Fields{
-  "region": "eu-west-1",
-})`,
+    comingSoon: true,
   },
 ]
