@@ -10,7 +10,7 @@
     "api:dev": "turbo run dev --filter=@observo/api",
     "sdk:build": "turbo run build --filter='./packages/sdk-*'",
     "sdk:test": "turbo run test --filter='./packages/sdk-*'",
-    "sdk:publish": "pnpm publish -r --filter './packages/sdk-*' --access public --no-git-checks"
+    "sdk:publish": "pnpm --filter @getobservo/node exec npm publish --access public --provenance"
   },
   "devDependencies": {
     "turbo": "^2.5.4"

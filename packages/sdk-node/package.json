@@ -1,8 +1,9 @@
 {
   "name": "@getobservo/node",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Node.js client for Observo log ingest",
   "license": "MIT",
+  "readme": "README.md",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -24,7 +25,9 @@
     "dev": "tsc -p tsconfig.json --watch",
     "clean": "rm -rf dist",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "pnpm build && node --test test/**/*.test.mjs"
+    "test": "pnpm build && node --test test/**/*.test.mjs",
+    "prepack": "pnpm build",
+    "prepublishOnly": "node --input-type=module -e \"import fs from 'node:fs'; if (!fs.existsSync('README.md')) throw new Error('README.md is missing'); if (fs.statSync('README.md').size < 100) throw new Error('README.md is empty'); const pack = fs.readFileSync('package.json','utf8'); if (!JSON.parse(pack).files?.includes('README.md')) throw new Error('README.md must be listed in package.json files');\""
   },
   "devDependencies": {
     "tsup": "^8.5.1",

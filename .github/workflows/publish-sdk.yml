@@ -75,18 +75,19 @@ jobs:
       - name: Build
         run: pnpm turbo run build --filter='${{ steps.target.outputs.filter }}'
 
-      - name: Verify publish bundle
+      - name: Verify publish bundle includes README
         shell: bash
         run: |
           set -euo pipefail
           mapfile -t packages < <(pnpm list -r --filter '${{ steps.target.outputs.filter }}' --depth -1 --parseable)
           for pkg_dir in "${packages[@]}"; do
             echo "Checking ${pkg_dir}"
-            if [ ! -d "${pkg_dir}/dist" ]; then
-              echo "Missing dist/ in ${pkg_dir}"
-              exit 1
-            fi
-            (cd "${pkg_dir}" && npm pack --dry-run)
+            test -f "${pkg_dir}/README.md"
+            test -s "${pkg_dir}/README.md"
+            test -d "${pkg_dir}/dist"
+            pack_output="$(cd "${pkg_dir}" && npm pack --dry-run 2>&1)"
+            echo "${pack_output}"
+            echo "${pack_output}" | rg -q 'README\.md'
             if strings "${pkg_dir}"/dist/*.{js,cjs} 2>/dev/null | rg -q 'OBV:[a-f0-9]{32}:'; then
               echo "Possible API key found in ${pkg_dir}/dist"
               exit 1
@@ -94,6 +95,6 @@ jobs:
           done
 
       - name: Publish to npm
-        run: pnpm publish -r --filter '${{ steps.target.outputs.filter }}' --access public --no-git-checks --provenance
+        run: pnpm --filter '${{ steps.target.outputs.filter }}' exec npm publish --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

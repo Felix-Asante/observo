@@ -39,15 +39,14 @@ jobs:
       - name: Build
         run: pnpm turbo run build --filter='./packages/sdk-*'
 
-      - name: Verify publish bundle
+      - name: Verify publish bundle includes README
         shell: bash
         run: |
           set -euo pipefail
           for pkg_dir in packages/sdk-*/; do
             echo "Checking ${pkg_dir}"
-            (cd "${pkg_dir}" && npm pack --dry-run)
-            if strings "${pkg_dir}"/dist/*.{js,cjs} 2>/dev/null | rg -q 'OBV:[a-f0-9]{32}:'; then
-              echo "Possible API key found in ${pkg_dir}/dist"
-              exit 1
-            fi
+            test -f "${pkg_dir}/README.md"
+            pack_output="$(cd "${pkg_dir}" && npm pack --dry-run 2>&1)"
+            echo "${pack_output}"
+            echo "${pack_output}" | rg -q 'README\.md'
           done
