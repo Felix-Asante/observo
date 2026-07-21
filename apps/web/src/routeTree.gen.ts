@@ -9,35 +9,40 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as authRouteRouteImport } from './routes/(auth)/route'
-import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as authSignUpRouteImport } from './routes/(auth)/sign-up'
-import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
-import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
+import { Route as appRouteRouteImport } from './routes/(app)/route'
+import { Route as authRouteRouteImport } from './routes/(auth)/route'
 import { Route as appDashboardRouteRouteImport } from './routes/(app)/dashboard/route'
+import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
+import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
+import { Route as authSignUpRouteImport } from './routes/(auth)/sign-up'
 import { Route as appDashboardIndexRouteImport } from './routes/(app)/dashboard/index'
-import { Route as appDashboardSdkRouteImport } from './routes/(app)/dashboard/sdk'
-import { Route as appDashboardLogsRouteImport } from './routes/(app)/dashboard/logs'
-import { Route as appDashboardLiveRouteImport } from './routes/(app)/dashboard/live'
 import { Route as appDashboardApiKeysRouteImport } from './routes/(app)/dashboard/api-keys'
+import { Route as appDashboardLiveRouteImport } from './routes/(app)/dashboard/live'
+import { Route as appDashboardLogsRouteImport } from './routes/(app)/dashboard/logs'
+import { Route as appDashboardSdkRouteImport } from './routes/(app)/dashboard/sdk'
 
-const authRouteRoute = authRouteRouteImport.update({
-  id: '/(auth)',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const appRouteRoute = appRouteRouteImport.update({
   id: '/(app)',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const authRouteRoute = authRouteRouteImport.update({
+  id: '/(auth)',
   getParentRoute: () => rootRouteImport,
 } as any)
-const authSignUpRoute = authSignUpRouteImport.update({
-  id: '/sign-up',
-  path: '/sign-up',
+const appDashboardRouteRoute = appDashboardRouteRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const authForgotPasswordRoute = authForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => authRouteRoute,
 } as any)
 const authSignInRoute = authSignInRouteImport.update({
@@ -45,29 +50,19 @@ const authSignInRoute = authSignInRouteImport.update({
   path: '/sign-in',
   getParentRoute: () => authRouteRoute,
 } as any)
-const authForgotPasswordRoute = authForgotPasswordRouteImport.update({
-  id: '/forgot-password',
-  path: '/forgot-password',
+const authSignUpRoute = authSignUpRouteImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
   getParentRoute: () => authRouteRoute,
-} as any)
-const appDashboardRouteRoute = appDashboardRouteRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => appRouteRoute,
 } as any)
 const appDashboardIndexRoute = appDashboardIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => appDashboardRouteRoute,
 } as any)
-const appDashboardSdkRoute = appDashboardSdkRouteImport.update({
-  id: '/sdk',
-  path: '/sdk',
-  getParentRoute: () => appDashboardRouteRoute,
-} as any)
-const appDashboardLogsRoute = appDashboardLogsRouteImport.update({
-  id: '/logs',
-  path: '/logs',
+const appDashboardApiKeysRoute = appDashboardApiKeysRouteImport.update({
+  id: '/api-keys',
+  path: '/api-keys',
   getParentRoute: () => appDashboardRouteRoute,
 } as any)
 const appDashboardLiveRoute = appDashboardLiveRouteImport.update({
@@ -75,9 +70,14 @@ const appDashboardLiveRoute = appDashboardLiveRouteImport.update({
   path: '/live',
   getParentRoute: () => appDashboardRouteRoute,
 } as any)
-const appDashboardApiKeysRoute = appDashboardApiKeysRouteImport.update({
-  id: '/api-keys',
-  path: '/api-keys',
+const appDashboardLogsRoute = appDashboardLogsRouteImport.update({
+  id: '/logs',
+  path: '/logs',
+  getParentRoute: () => appDashboardRouteRoute,
+} as any)
+const appDashboardSdkRoute = appDashboardSdkRouteImport.update({
+  id: '/sdk',
+  path: '/sdk',
   getParentRoute: () => appDashboardRouteRoute,
 } as any)
 
@@ -167,11 +167,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/(auth)': {
-      id: '/(auth)'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof authRouteRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(app)': {
@@ -181,18 +181,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/(auth)': {
+      id: '/(auth)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof authRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(auth)/sign-up': {
-      id: '/(auth)/sign-up'
-      path: '/sign-up'
-      fullPath: '/sign-up'
-      preLoaderRoute: typeof authSignUpRouteImport
+    '/(app)/dashboard': {
+      id: '/(app)/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof appDashboardRouteRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(auth)/forgot-password': {
+      id: '/(auth)/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof authForgotPasswordRouteImport
       parentRoute: typeof authRouteRoute
     }
     '/(auth)/sign-in': {
@@ -202,19 +209,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authSignInRouteImport
       parentRoute: typeof authRouteRoute
     }
-    '/(auth)/forgot-password': {
-      id: '/(auth)/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/forgot-password'
-      preLoaderRoute: typeof authForgotPasswordRouteImport
+    '/(auth)/sign-up': {
+      id: '/(auth)/sign-up'
+      path: '/sign-up'
+      fullPath: '/sign-up'
+      preLoaderRoute: typeof authSignUpRouteImport
       parentRoute: typeof authRouteRoute
-    }
-    '/(app)/dashboard': {
-      id: '/(app)/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof appDashboardRouteRouteImport
-      parentRoute: typeof appRouteRoute
     }
     '/(app)/dashboard/': {
       id: '/(app)/dashboard/'
@@ -223,18 +223,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appDashboardIndexRouteImport
       parentRoute: typeof appDashboardRouteRoute
     }
-    '/(app)/dashboard/sdk': {
-      id: '/(app)/dashboard/sdk'
-      path: '/sdk'
-      fullPath: '/dashboard/sdk'
-      preLoaderRoute: typeof appDashboardSdkRouteImport
-      parentRoute: typeof appDashboardRouteRoute
-    }
-    '/(app)/dashboard/logs': {
-      id: '/(app)/dashboard/logs'
-      path: '/logs'
-      fullPath: '/dashboard/logs'
-      preLoaderRoute: typeof appDashboardLogsRouteImport
+    '/(app)/dashboard/api-keys': {
+      id: '/(app)/dashboard/api-keys'
+      path: '/api-keys'
+      fullPath: '/dashboard/api-keys'
+      preLoaderRoute: typeof appDashboardApiKeysRouteImport
       parentRoute: typeof appDashboardRouteRoute
     }
     '/(app)/dashboard/live': {
@@ -244,11 +237,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appDashboardLiveRouteImport
       parentRoute: typeof appDashboardRouteRoute
     }
-    '/(app)/dashboard/api-keys': {
-      id: '/(app)/dashboard/api-keys'
-      path: '/api-keys'
-      fullPath: '/dashboard/api-keys'
-      preLoaderRoute: typeof appDashboardApiKeysRouteImport
+    '/(app)/dashboard/logs': {
+      id: '/(app)/dashboard/logs'
+      path: '/logs'
+      fullPath: '/dashboard/logs'
+      preLoaderRoute: typeof appDashboardLogsRouteImport
+      parentRoute: typeof appDashboardRouteRoute
+    }
+    '/(app)/dashboard/sdk': {
+      id: '/(app)/dashboard/sdk'
+      path: '/sdk'
+      fullPath: '/dashboard/sdk'
+      preLoaderRoute: typeof appDashboardSdkRouteImport
       parentRoute: typeof appDashboardRouteRoute
     }
   }
