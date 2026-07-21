@@ -84,7 +84,9 @@ export function broadcastLogs(newLogs: BroadcastLog[]) {
     const ordered = matched.toReversed();
 
     for (let i = 0; i < ordered.length; i += CHUNK_SIZE) {
-      const chunk = ordered.slice(i, i + CHUNK_SIZE);
+      const chunk = ordered
+        .slice(i, i + CHUNK_SIZE)
+        .map(({ keyId: _keyId, ...log }) => log);
       const ok = writeEvent(res, { type: 'live', logs: chunk });
       if (!ok) {
         stale.push(res);

@@ -32,7 +32,7 @@ export class ObservoTransport {
   private shuttingDown: boolean = false;
 
   constructor(options: ObservoTransportOptions) {
-    const apiBaseUrl = getEnv("API_URL", "");
+    const apiBaseUrl = getEnv("API_URL", "http://localhost:8081/api/v1");
 
     if (!isValidUrl(apiBaseUrl ?? "")) {
       throw new Error("Invalid base URL");
@@ -102,16 +102,18 @@ export class ObservoTransport {
 
     try {
       this.flushTimer = null;
-      const response = await fetch(`${this.baseUrl}/logs`, {
+      const endpoint = `${this.baseUrl}/logs/send`;
+      const response = await fetch(endpoint, {
         method: "POST",
         body: JSON.stringify({ logs }),
         headers: this.headers,
         keepalive: true,
       });
+      // const data = await response.json();
       if (!response.ok) {
         throw new Error(`Failed to flush logs: ${response.statusText}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to flush logs:", error);
     } finally {
       this.isFlushing = false;

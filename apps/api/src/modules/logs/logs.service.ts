@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import type { Response as ExpressResponse } from 'express';
 import { publishLogBatch } from 'src/nats/producer';
 import { clickhouseClient } from '~/clickhouse/client';
-import { LOGS_EVENTS_TABLE } from '~/clickhouse/schema';
+import { LOGS_EVENTS_SELECT, LOGS_EVENTS_TABLE } from '~/clickhouse/schema';
 import { addClient, removeClient } from '~/sse/sse-registry';
 import type { AddLogsDto } from '~/modules/logs/dto/add-log.dto';
 import type { StreamLogsQueryDto } from '~/modules/logs/dto/stream-logs-query.dto';
@@ -70,7 +70,7 @@ export class LogsService {
       queryParams.environment = env;
     }
 
-    const sql = `SELECT * FROM ${LOGS_EVENTS_TABLE} WHERE ${whereClauses.join(' AND ')} ORDER BY timestamp DESC LIMIT {limit:UInt32}`;
+    const sql = `SELECT ${LOGS_EVENTS_SELECT} FROM ${LOGS_EVENTS_TABLE} WHERE ${whereClauses.join(' AND ')} ORDER BY timestamp DESC LIMIT {limit:UInt32}`;
 
     try {
       const result = await clickhouseClient.query({
@@ -252,15 +252,17 @@ export class LogsService {
       queryParams.timeStampTo = timeStampTo;
     }
 
-    const sql = `SELECT * FROM ${LOGS_EVENTS_TABLE} WHERE ${whereClauses.join(' AND ')} ORDER BY timestamp DESC LIMIT {limit:UInt32}`;
+    const sql = `SELECT ${LOGS_EVENTS_SELECT} FROM ${LOGS_EVENTS_TABLE} WHERE ${whereClauses.join(' AND ')} ORDER BY timestamp DESC LIMIT {limit:UInt32}`;
 
     const nowSec = Math.floor(Date.now() / 1000);
     const from24hSec = nowSec - 60 * 60 * 24;
     const to24hSec = nowSec;
 
     const where24h = [`userId = {userId:String}`];
-    where24h.push(`timestamp >= {from24hSec:UInt32}`);
-    where24h.push(`timestamp <= {to24hSec:UInt32}`);
+    where24h.push(
+      `timestamp >= {from24hSec:UInt32}`,
+      `timestamp <= {to24hSec:UInt32}`,
+    );
 
     const queryCount = `SELECT COUNT(*) AS total FROM ${LOGS_EVENTS_TABLE} WHERE ${where24h.join(' AND ')}`;
     const count24hPromise = clickhouseClient.query({

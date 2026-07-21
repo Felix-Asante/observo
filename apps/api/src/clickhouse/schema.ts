@@ -5,6 +5,25 @@ const database = ENV.CLICKHOUSE_DATABASE || 'logs';
 
 export const LOGS_EVENTS_TABLE = `${database}.events`;
 
+export const LOGS_EVENTS_PUBLIC_COLUMNS = [
+  'userId',
+  'type',
+  'message',
+  'appName',
+  'environment',
+  'importance',
+  'subsystem',
+  'service',
+  'operation',
+  'track',
+  'security',
+  'metrics',
+  'timestamp',
+  'ingestedAt',
+] as const;
+
+export const LOGS_EVENTS_SELECT = LOGS_EVENTS_PUBLIC_COLUMNS.join(', ');
+
 export async function createLogsTable() {
   await clickhouseClient.command({
     query: `CREATE DATABASE IF NOT EXISTS ${database}`,
